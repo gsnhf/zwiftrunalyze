@@ -5,6 +5,7 @@ services:
     build:
      context: .
      dockerfile: Dockerfile
+    network_mode: host
     volumes:
       - ./data/:/zwiftrunalyze/data
       - ./zrconfig.py:/zwiftrunalyze/zrconfig.py
