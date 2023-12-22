@@ -28,8 +28,7 @@ def main():
         if pd.to_datetime(a["endDate"]).tz_convert(None) > importdate:
             printText("Activity ended after set importdate. Skipping.")
             continue
-        link = "https://" + a["fitFileBucket"] + ".s3.amazonaws.com/" \
-            + a["fitFileKey"]
+        link = "https://" + a["fitFileBucket"] + ".s3.amazonaws.com/" + a["fitFileKey"]
 
         fname = "data/" + pd.to_datetime(a["endDate"]).strftime("%Y%m%d_%H%M%S")
 
@@ -37,18 +36,14 @@ def main():
             printText("Already downloaded. Skipping")
             continue
 
-        printText("Processing: " + a["name"] + " - Date: "
-            + pd.to_datetime(a["endDate"]).strftime("%Y-%m-%d")
-            + " - " + str(a["distanceInMeters"]/1000) + "km")
+        printText("Processing: " + a["name"] + " - Date: " + pd.to_datetime(a["endDate"]).strftime("%Y-%m-%d") + " - " + str(a["distanceInMeters"] / 1000) + "km")
 
         # Save Fit File
         res = requests.get(link)
-        with open(fname+".fit", "wb") as f:
+        with open(fname + ".fit", "wb") as f:
             f.write(res.content)
         if runtoken:
-            r = requests.post("https://runalyze.com/api/v1/activities/uploads",
-                            files={'file': open(fname+".fit", "rb")},
-                            headers={"token": runtoken})
+            r = requests.post("https://runalyze.com/api/v1/activities/uploads", files={'file': open(fname + ".fit", "rb")}, headers={"token": runtoken})
             printText(r.text)
         # Save Desc Data as Json
         with open(fname+"_desc.json", "w") as f:
