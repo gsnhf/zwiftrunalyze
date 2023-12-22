@@ -16,7 +16,7 @@ act = activities.list()
 
 # Import only after importdate
 if len(sys.argv) > 1:
-    importdate = pd.to_datetime(sys.arg[1])
+    importdate = pd.to_datetime(sys.argv[1])
 else:
     importdate = pd.to_datetime(datetime.now())
 
