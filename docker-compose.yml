@@ -5,6 +5,7 @@ services:
     build:
      context: .
      dockerfile: Dockerfile
+     network: host
     network_mode: host
     volumes:
       - ./data/:/zwiftrunalyze/data
