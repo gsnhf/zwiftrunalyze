@@ -9,7 +9,7 @@ from zwift import Client  # pip install zwift-client
 from zrconfig import zwiftuser, zwiftpwd, runtoken
 
 def printText(text):
-    print(datetime.now() + ": "+ text)
+    print(str(datetime.now()) + ": "+ text)
 
 def main():
     # Initialize Client
@@ -24,29 +24,44 @@ def main():
     else:
         importdate = pd.to_datetime(datetime.now())
 
-    for a in act:
-        if pd.to_datetime(a["endDate"]).tz_convert(None) > importdate:
-            printText("Activity ended after set importdate. Skipping.")
-            continue
-        link = "https://" + a["fitFileBucket"] + ".s3.amazonaws.com/" + a["fitFileKey"]
+    try:
+        if not os.path.exists("data"):
+            os.makedirs("data")
+        fitFilesFile = open("data/fitFiles.txt", "w")
+            #with open("data/fitFiles.txt", "w") as fitFilesFile:
+            #f.write(res.content)
+        for a in act:
+            if pd.to_datetime(a["endDate"]).tz_convert(None) > importdate:
+                printText("Activity ended after set importdate. Skipping.")
+                continue
+            link = "https://" + a["fitFileBucket"] + ".s3.amazonaws.com/" + a["fitFileKey"]
 
-        fname = "data/" + pd.to_datetime(a["endDate"]).strftime("%Y%m%d_%H%M%S")
+            fNameShort = pd.to_datetime(a["endDate"]).strftime("%Y%m%d_%H%M%S")
 
-        if os.path.isfile(fname+".fit"):
-            printText("Already downloaded. Skipping")
-            continue
+            fName = "data/" + fNameShort
 
-        printText("Processing: " + a["name"] + " - Date: " + pd.to_datetime(a["endDate"]).strftime("%Y-%m-%d") + " - " + str(a["distanceInMeters"] / 1000) + "km")
+            fitFilesFile.write(fNameShort + "\n")
 
-        # Save Fit File
-        res = requests.get(link)
-        with open(fname + ".fit", "wb") as f:
-            f.write(res.content)
-        if runtoken:
-            r = requests.post("https://runalyze.com/api/v1/activities/uploads", files={'file': open(fname + ".fit", "rb")}, headers={"token": runtoken})
-            printText(r.text)
-        # Save Desc Data as Json
-        with open(fname+"_desc.json", "w") as f:
-            json.dump(a, f)
+            if os.path.isfile(fName+".fit"):
+                printText("Already downloaded. Skipping")
+                continue
+
+            printText("Processing: " + a["name"] + " - Date: " + pd.to_datetime(a["endDate"]).strftime("%Y-%m-%d") + " - " + str(a["distanceInMeters"] / 1000) + "km")
+
+            # Save Fit File
+            res = requests.get(link)
+            with open(fName + ".fit", "wb") as f:
+                f.write(res.content)
+            # if runtoken:
+                # r = requests.post("https://runalyze.com/api/v1/activities/uploads", files={'file': open(fname + ".fit", "rb")}, headers={"token": runtoken})
+                # printText(r.text)
+                
+            # Save Desc Data as Json
+            with open(fName+"_desc.json", "w") as f:
+                json.dump(a, f)
+    except:
+        pass
+    finally:
+        fitFilesFile.close()
 
 main()
