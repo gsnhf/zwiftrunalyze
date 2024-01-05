@@ -27,12 +27,10 @@ def main():
     try:
         if not os.path.exists("data"):
             os.makedirs("data")
-        fitFilesFile = open("data/fitFiles.json", "w")
-        # fitFilesFile.write(act)
-        json.dump(activities, fitFilesFile, indent=2)
 
-            #with open("data/fitFiles.txt", "w") as fitFilesFile:
-            #f.write(res.content)
+        with open("data/fitFiles.json", "w") as fitFilesFile:
+            json.dump(activities, fitFilesFile, indent=2)
+
         for activity in activities:
             if pd.to_datetime(activity["endDate"]).tz_convert(None) > importdate:
                 printText("Activity ended after set importdate. Skipping.")
