@@ -16,7 +16,7 @@ def main():
     client = Client(zwiftuser, zwiftpwd)
     profile = client.get_profile()
     activities = client.get_activity(profile.profile["id"])
-    act = activities.list()
+    activities = activities.list()
 
     # Import only after importdate
     if len(sys.argv) > 1:
@@ -27,26 +27,31 @@ def main():
     try:
         if not os.path.exists("data"):
             os.makedirs("data")
-        fitFilesFile = open("data/fitFiles.txt", "w")
+        fitFilesFile = open("data/fitFiles.json", "w")
+        # fitFilesFile.write(act)
+        json.dump(activities, fitFilesFile, indent=2)
+
             #with open("data/fitFiles.txt", "w") as fitFilesFile:
             #f.write(res.content)
-        for a in act:
-            if pd.to_datetime(a["endDate"]).tz_convert(None) > importdate:
+        for activity in activities:
+            if pd.to_datetime(activity["endDate"]).tz_convert(None) > importdate:
                 printText("Activity ended after set importdate. Skipping.")
                 continue
-            link = "https://" + a["fitFileBucket"] + ".s3.amazonaws.com/" + a["fitFileKey"]
+            link = "https://" + activity["fitFileBucket"] + ".s3.amazonaws.com/" + activity["fitFileKey"]
 
-            fNameShort = pd.to_datetime(a["endDate"]).strftime("%Y%m%d_%H%M%S")
+            fNameShort = pd.to_datetime(activity["endDate"]).strftime("%Y%m%d_%H%M%S")
 
             fName = "data/" + fNameShort
 
-            fitFilesFile.write(fNameShort + "\n")
+            # fitFilesFile.write(fNameShort + "\n")
 
             if os.path.isfile(fName+".fit"):
                 printText("Already downloaded. Skipping")
                 continue
 
-            printText("Processing: " + a["name"] + " - Date: " + pd.to_datetime(a["endDate"]).strftime("%Y-%m-%d") + " - " + str(a["distanceInMeters"] / 1000) + "km")
+            printText("Processing: " + activity["name"] + " - Date: " + pd.to_datetime(activity["endDate"]).strftime("%Y-%m-%d") + " - " + str(activity["distanceInMeters"] / 1000) + "km")
+
+            continue # das löschen
 
             # Save Fit File
             res = requests.get(link)
@@ -58,7 +63,7 @@ def main():
                 
             # Save Desc Data as Json
             with open(fName+"_desc.json", "w") as f:
-                json.dump(a, f)
+                json.dump(activity, f)
     except:
         pass
     finally:
