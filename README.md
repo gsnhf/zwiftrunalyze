@@ -1,8 +1,10 @@
 # zwiftrunalyze
+This is a fork of [zwiftrunalyze](https://github.com/pnposch/zwiftrunalyze) from [pnposch](https://github.com/pnposch). I fixed some bugs. The original program was not working for me. 
+
 Download FIT files from Zwift and upload to runanalyze. Simple as that.
 
-Zwift (www.zwift.com) is a popular virtual reality world for cyclists and runners.
-Runalyze (www.runalyze.com) is a privacy-friendly training log with extensive functionality (and its free!)
+[Zwift](www.zwift.com) is a popular virtual reality world for cyclists and runners.
+[Runalyze](www.runalyze.com) is a privacy-friendly training log with extensive functionality (and its free!)
 
 # Prequisites
 - Install zwift-client from https://github.com/sandeepvasani/zwift-client:
