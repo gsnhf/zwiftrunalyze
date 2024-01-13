@@ -14,9 +14,9 @@ def printText(text):
 def main():
     # Initialize Client
     client = Client(zwiftuser, zwiftpwd)
-    profile = client.get_profile()
-    activities = client.get_activity(profile.profile["id"])
-    activities = activities.list()
+    zwiftProfile = client.get_profile()
+    zwiftActivities = client.get_activity(zwiftProfile.profile["id"])
+    activitiesList = zwiftActivities.list()
 
     # Import only after importdate
     if len(sys.argv) > 1:
@@ -29,9 +29,9 @@ def main():
             os.makedirs("data")
 
         with open("data/fitFiles.json", "w") as fitFilesFile:
-            json.dump(activities, fitFilesFile, indent=2)
+            json.dump(activitiesList, fitFilesFile, indent=2)
 
-        for activity in activities:
+        for activity in activitiesList:
             if pd.to_datetime(activity["endDate"]).tz_convert(None) > importdate:
                 printText("Activity ended after set importdate. Skipping.")
                 continue
@@ -41,28 +41,22 @@ def main():
 
             fName = "data/" + fNameShort
 
-            # fitFilesFile.write(fNameShort + "\n")
+            fitFileName = fName + ".fit"
 
-            if os.path.isfile(fName+".fit"):
+            if os.path.isfile(fitFileName):
                 printText("Already downloaded. Skipping")
                 continue
 
             printText("Processing: " + activity["name"] + " - Date: " + pd.to_datetime(activity["endDate"]).strftime("%Y-%m-%d") + " - " + str(activity["distanceInMeters"] / 1000) + "km")
 
-            continue # das löschen
-
-            # Save Fit File
             res = requests.get(link)
-            with open(fName + ".fit", "wb") as f:
-                f.write(res.content)
-            # if runtoken:
-                # r = requests.post("https://runalyze.com/api/v1/activities/uploads", files={'file': open(fname + ".fit", "rb")}, headers={"token": runtoken})
-                # printText(r.text)
-                
-            # Save Desc Data as Json
-            with open(fName+"_desc.json", "w") as f:
-                json.dump(activity, f)
+            with open(fitFileName, "wb") as fitFile:
+                fitFile.write(res.content)
+            if runtoken:
+                runalyzePostResponse = requests.post("https://runalyze.com/api/v1/activities/uploads", files={'file': open(fitFileName, "rb")}, headers={"token": runtoken})
+                printText(runalyzePostResponse.text)
     except:
+        type, value, traceback = sys.exc_info()
         pass
     finally:
         fitFilesFile.close()
