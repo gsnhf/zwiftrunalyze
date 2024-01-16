@@ -1,3 +1,6 @@
+import aiohttp
+import asyncio
+import aiofiles as aiof
 import sys
 import json
 import os.path
@@ -7,6 +10,16 @@ import pandas as pd
 from datetime import datetime
 from zwift import Client  # pip install zwift-client
 from zrconfig import zwiftuser, zwiftpwd, runtoken
+
+async def download_file(url, fileName, runtoken):
+  async with aiohttp.ClientSession() as session:
+    async with session.get(url) as response:
+        async with aiof.open(fileName, "wb") as fitFile:
+            fitFile.write(response.content)
+            fitFile.flush()
+        # if runtoken:
+            # async with session.post("https://runalyze.com/api/v1/activities/uploads", files={'file': open(fileName, "rb")}, headers={"token": runtoken}) as responsePost:
+                # printText(responsePost.text)
 
 def printText(text):
     print(str(datetime.now()) + ": "+ text)
@@ -35,13 +48,8 @@ def main():
             if pd.to_datetime(activity["endDate"]).tz_convert(None) > importdate:
                 printText("Activity ended after set importdate. Skipping.")
                 continue
-            link = "https://" + activity["fitFileBucket"] + ".s3.amazonaws.com/" + activity["fitFileKey"]
 
-            fNameShort = pd.to_datetime(activity["endDate"]).strftime("%Y%m%d_%H%M%S")
-
-            fName = "data/" + fNameShort
-
-            fitFileName = fName + ".fit"
+            fitFileName = "data/" + pd.to_datetime(activity["endDate"]).strftime("%Y%m%d_%H%M%S") + ".fit"
 
             if os.path.isfile(fitFileName):
                 printText("Already downloaded. Skipping")
@@ -49,14 +57,11 @@ def main():
 
             printText("Processing: " + activity["name"] + " - Date: " + pd.to_datetime(activity["endDate"]).strftime("%Y-%m-%d") + " - " + str(activity["distanceInMeters"] / 1000) + "km")
 
-            res = requests.get(link)
-            with open(fitFileName, "wb") as fitFile:
-                fitFile.write(res.content)
-            if runtoken:
-                runalyzePostResponse = requests.post("https://runalyze.com/api/v1/activities/uploads", files={'file': open(fitFileName, "rb")}, headers={"token": runtoken})
-                printText(runalyzePostResponse.text)
+            link = "https://" + activity["fitFileBucket"] + ".s3.amazonaws.com/" + activity["fitFileKey"]
+            asyncio.run(download_file(link, fitFileName, runtoken))
     except:
         type, value, traceback = sys.exc_info()
+        printText(str(value))
         pass
     finally:
         fitFilesFile.close()

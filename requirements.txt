@@ -1,4 +1,5 @@
 requests
 pandas
+aiofiles
 aiohttp
 zwift-client
