@@ -4,7 +4,6 @@ import aiofiles as aiof
 import sys
 import json
 import os.path
-import requests
 import pandas as pd
 
 from datetime import datetime
@@ -15,11 +14,18 @@ async def download_file(url, fileName, runtoken):
   async with aiohttp.ClientSession() as session:
     async with session.get(url) as response:
         async with aiof.open(fileName, "wb") as fitFile:
-            fitFile.write(response.content)
-            fitFile.flush()
-        # if runtoken:
-            # async with session.post("https://runalyze.com/api/v1/activities/uploads", files={'file': open(fileName, "rb")}, headers={"token": runtoken}) as responsePost:
-                # printText(responsePost.text)
+            empty_bytes = b''
+            result = empty_bytes
+            while True:
+                chunk = await response.content.read(8)
+                if chunk == empty_bytes:
+                    break
+                result += chunk 
+            await fitFile.write(result)
+            await fitFile.flush()
+        if runtoken:
+            async with session.post("https://runalyze.com/api/v1/activities/uploads", files={'file': open(fileName, "rb")}, headers={"token": runtoken}) as responsePost:
+                printText(responsePost.text)
 
 def printText(text):
     print(str(datetime.now()) + ": "+ text)
@@ -58,6 +64,9 @@ def main():
             printText("Processing: " + activity["name"] + " - Date: " + pd.to_datetime(activity["endDate"]).strftime("%Y-%m-%d") + " - " + str(activity["distanceInMeters"] / 1000) + "km")
 
             link = "https://" + activity["fitFileBucket"] + ".s3.amazonaws.com/" + activity["fitFileKey"]
+            # loop = asyncio.get_event_loop()
+
+            # server = loop.run_until_complete(download_file(link, fitFileName, runtoken))
             asyncio.run(download_file(link, fitFileName, runtoken))
     except:
         type, value, traceback = sys.exc_info()
