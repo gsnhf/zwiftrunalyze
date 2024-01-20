@@ -6,8 +6,6 @@ ADD https://raw.githubusercontent.com/gsnhf/zwiftrunalyze/dev/requirements.txt r
 RUN git clone --branch dev https://github.com/gsnhf/zwiftrunalyze.git
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
-# RUN pip install aiofiles
-# RUN pip install aiohttp
 RUN pip install protobuf==3.20.*
 WORKDIR /zwiftrunalyze
 CMD sleep infinity
