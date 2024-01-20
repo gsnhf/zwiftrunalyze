@@ -3,3 +3,4 @@ pandas
 aiofiles
 aiohttp
 zwift-client
+pyarrow
