@@ -7,25 +7,38 @@ import os.path
 import pandas as pd
 
 from datetime import datetime
-from zwift import Client  # pip install zwift-client
+from zwift import Client
 from zrconfig import zwiftuser, zwiftpwd, runtoken
 
 async def download_file(url, fileName, runtoken):
-  async with aiohttp.ClientSession() as session:
-    async with session.get(url) as response:
-        async with aiof.open(fileName, "wb") as fitFile:
-            empty_bytes = b''
-            result = empty_bytes
-            while True:
-                chunk = await response.content.read(8)
-                if chunk == empty_bytes:
-                    break
-                result += chunk 
-            await fitFile.write(result)
-            await fitFile.flush()
-        if runtoken:
-            async with session.post("https://runalyze.com/api/v1/activities/uploads", files={'file': open(fileName, "rb")}, headers={"token": runtoken}) as responsePost:
-                printText(responsePost.text)
+    try:
+      async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            async with aiof.open(fileName, "wb") as fitFile:
+                empty_bytes = b''
+                result = empty_bytes
+                while True:
+                    chunk = await response.content.read(8)
+                    if chunk == empty_bytes:
+                        break
+                    result += chunk 
+                await fitFile.write(result)
+                await fitFile.flush()
+            if runtoken:
+                try:
+                    async with session.post("https://runalyze.com/api/v1/activities/uploads", data={'file': open(fileName, "rb")}, headers={"token": runtoken}) as responsePost:
+                        # text = responsePost.text
+                        # printText(str(text))
+                        printText("post finished")
+                except:
+                    type, value, traceback = sys.exc_info()
+                    printText("runalyze error: " + str(value))
+                    pass
+    except:
+        type, value, traceback = sys.exc_info()
+        printText(str(value))
+        pass
+  
 
 def printText(text):
     print(str(datetime.now()) + ": "+ text)
@@ -64,9 +77,7 @@ def main():
             printText("Processing: " + activity["name"] + " - Date: " + pd.to_datetime(activity["endDate"]).strftime("%Y-%m-%d") + " - " + str(activity["distanceInMeters"] / 1000) + "km")
 
             link = "https://" + activity["fitFileBucket"] + ".s3.amazonaws.com/" + activity["fitFileKey"]
-            # loop = asyncio.get_event_loop()
-
-            # server = loop.run_until_complete(download_file(link, fitFileName, runtoken))
+            
             asyncio.run(download_file(link, fitFileName, runtoken))
     except:
         type, value, traceback = sys.exc_info()
