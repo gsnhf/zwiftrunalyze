@@ -1,6 +1,7 @@
 import aiohttp
 import asyncio
 import aiofiles as aiof
+import logging
 import sys
 import json
 import os.path
@@ -10,10 +11,20 @@ from datetime import datetime
 from zwift import Client
 from zrconfig import zwiftuser, zwiftpwd, runtoken
 
-async def download_file(url, fileName, runtoken):
+def log(message):
+    logging.info(message)
+
+def logError(message):
+    logging.error(message)
+
+async def download_file(activity, fileName, runtoken):
     try:
+      log("Processing: " + activity["name"] + " - Date: " + pd.to_datetime(activity["endDate"]).strftime("%Y-%m-%d") + " - " + str(activity["distanceInMeters"] / 1000) + "km")
+      link = "https://" + activity["fitFileBucket"] + ".s3.amazonaws.com/" + activity["fitFileKey"]
+
       async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
+        async with session.get(link) as response:
+            logging.debug(str(response.text))
             async with aiof.open(fileName, "wb") as fitFile:
                 empty_bytes = b''
                 result = empty_bytes
@@ -26,24 +37,22 @@ async def download_file(url, fileName, runtoken):
                 await fitFile.flush()
             if runtoken:
                 try:
-                    async with session.post("https://runalyze.com/api/v1/activities/uploads", data={'file': open(fileName, "rb")}, headers={"token": runtoken}) as responsePost:
-                        # text = responsePost.text
-                        # printText(str(text))
-                        printText("post finished")
+                    log(runtoken)
+                    #async with session.post("https://runalyze.com/api/v1/activities/uploads", data={'file': open(fileName, "rb")}, headers={"token": runtoken}) as responsePost:
+                        #log("post finished: " + str(responsePost.text))
                 except:
                     type, value, traceback = sys.exc_info()
-                    printText("runalyze error: " + str(value))
+                    logError("runalyze error: " + str(value))
                     pass
     except:
         type, value, traceback = sys.exc_info()
-        printText(str(value))
+        logError(str(value))
         pass
-  
-
-def printText(text):
-    print(str(datetime.now()) + ": "+ text)
 
 def main():
+    logging.basicConfig(filename='data/zwiftrunalyze.log', encoding='utf-8', level=logging.INFO)
+    logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+
     # Initialize Client
     client = Client(zwiftuser, zwiftpwd)
     zwiftProfile = client.get_profile()
@@ -65,23 +74,19 @@ def main():
 
         for activity in activitiesList:
             if pd.to_datetime(activity["endDate"]).tz_convert(None) > importdate:
-                printText("Activity ended after set importdate. Skipping.")
+                log("Activity ended after set importdate. Skipping.")
                 continue
 
             fitFileName = "data/" + pd.to_datetime(activity["endDate"]).strftime("%Y%m%d_%H%M%S") + ".fit"
 
             if os.path.isfile(fitFileName):
-                printText("Already downloaded. Skipping")
+                log("Already downloaded. Skipping")
                 continue
 
-            printText("Processing: " + activity["name"] + " - Date: " + pd.to_datetime(activity["endDate"]).strftime("%Y-%m-%d") + " - " + str(activity["distanceInMeters"] / 1000) + "km")
-
-            link = "https://" + activity["fitFileBucket"] + ".s3.amazonaws.com/" + activity["fitFileKey"]
-            
-            asyncio.run(download_file(link, fitFileName, runtoken))
+            asyncio.run(download_file(activity, fitFileName, runtoken))
     except:
         type, value, traceback = sys.exc_info()
-        printText(str(value))
+        logError(str(value))
         pass
     finally:
         fitFilesFile.close()
