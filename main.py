@@ -1,51 +1,94 @@
+import aiohttp
+import asyncio
+import aiofiles as aiof
+import logging
 import sys
 import json
 import os.path
-import requests
 import pandas as pd
 
 from datetime import datetime
-from zwift import Client  # pip install zwift-client
+from zwift import Client
 from zrconfig import zwiftuser, zwiftpwd, runtoken
 
-# Initialize Client
-client = Client(zwiftuser, zwiftpwd)
-profile = client.get_profile()
-activities = client.get_activity(profile.profile["id"])
-act = activities.list()
+def log(message):
+    logging.info(message)
 
-# Import only after importdate
-if len(sys.argv) > 1:
-    importdate = pd.to_datetime(sys.argv[1])
-else:
-    importdate = pd.to_datetime(datetime.now())
+def logError(message):
+    logging.error(message)
 
-for a in act:
-    if pd.to_datetime(a["endDate"]).tz_convert(None) > importdate:
-        print("Activity ended after set importdate. Skipping.")
-        continue
-    link = "https://" + a["fitFileBucket"] + ".s3.amazonaws.com/" \
-           + a["fitFileKey"]
+async def download_file(activity, fileName, runtoken):
+    try:
+      log("Processing: " + activity["name"] + " - Date: " + pd.to_datetime(activity["endDate"]).strftime("%Y-%m-%d") + " - " + str(activity["distanceInMeters"] / 1000) + "km")
+      link = "https://" + activity["fitFileBucket"] + ".s3.amazonaws.com/" + activity["fitFileKey"]
 
-    fname = "data/" + pd.to_datetime(a["endDate"]).strftime("%Y%m%d_%H%M%S")
+      async with aiohttp.ClientSession() as session:
+        async with session.get(link) as response:
+            logging.debug(str(response.text))
+            async with aiof.open(fileName, "wb") as fitFile:
+                empty_bytes = b''
+                result = empty_bytes
+                while True:
+                    chunk = await response.content.read(8)
+                    if chunk == empty_bytes:
+                        break
+                    result += chunk 
+                await fitFile.write(result)
+                await fitFile.flush()
+            if runtoken:
+                try:
+                    log(runtoken)
+                    #async with session.post("https://runalyze.com/api/v1/activities/uploads", data={'file': open(fileName, "rb")}, headers={"token": runtoken}) as responsePost:
+                        #log("post finished: " + str(responsePost.text))
+                except:
+                    type, value, traceback = sys.exc_info()
+                    logError("runalyze error: " + str(value))
+                    pass
+    except:
+        type, value, traceback = sys.exc_info()
+        logError(str(value))
+        pass
 
-    if os.path.isfile(fname+".fit"):
-        print("Already downloaded. Skipping")
-        continue
+def main():
+    logging.basicConfig(filename='data/zwiftrunalyze.log', encoding='utf-8', level=logging.INFO)
+    logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
-    print("Processing: " + a["name"] + " - Date: "
-          + pd.to_datetime(a["endDate"]).strftime("%Y-%m-%d")
-          + " - " + str(a["distanceInMeters"]/1000) + "km")
+    # Initialize Client
+    client = Client(zwiftuser, zwiftpwd)
+    zwiftProfile = client.get_profile()
+    zwiftActivities = client.get_activity(zwiftProfile.profile["id"])
+    activitiesList = zwiftActivities.list()
 
-    # Save Fit File
-    res = requests.get(link)
-    with open(fname+".fit", "wb") as f:
-        f.write(res.content)
-    if runtoken:
-        r = requests.post("https://runalyze.com/api/v1/activities/uploads",
-                          files={'file': open(fname+".fit", "rb")},
-                          headers={"token": runtoken})
-        print(r.text)
-    # Save Desc Data as Json
-    with open(fname+"_desc.json", "w") as f:
-        json.dump(a, f)
+    # Import only after importdate
+    if len(sys.argv) > 1:
+        importdate = pd.to_datetime(sys.argv[1])
+    else:
+        importdate = pd.to_datetime(datetime.now())
+
+    try:
+        if not os.path.exists("data"):
+            os.makedirs("data")
+
+        with open("data/fitFiles.json", "w") as fitFilesFile:
+            json.dump(activitiesList, fitFilesFile, indent=2)
+
+        for activity in activitiesList:
+            if pd.to_datetime(activity["endDate"]).tz_convert(None) > importdate:
+                log("Activity ended after set importdate. Skipping.")
+                continue
+
+            fitFileName = "data/" + pd.to_datetime(activity["endDate"]).strftime("%Y%m%d_%H%M%S") + ".fit"
+
+            if os.path.isfile(fitFileName):
+                log("Already downloaded. Skipping")
+                continue
+
+            asyncio.run(download_file(activity, fitFileName, runtoken))
+    except:
+        type, value, traceback = sys.exc_info()
+        logError(str(value))
+        pass
+    finally:
+        fitFilesFile.close()
+
+main()
