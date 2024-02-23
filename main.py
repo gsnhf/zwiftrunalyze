@@ -38,8 +38,8 @@ async def download_file(activity, fileName, runtoken):
             if runtoken:
                 try:
                     log(runtoken)
-                    #async with session.post("https://runalyze.com/api/v1/activities/uploads", data={'file': open(fileName, "rb")}, headers={"token": runtoken}) as responsePost:
-                        #log("post finished: " + str(responsePost.text))
+                    async with session.post("https://runalyze.com/api/v1/activities/uploads", data={'file': open(fileName, "rb")}, headers={"token": runtoken}) as responsePost:
+                        log("post finished: " + str(responsePost.text))
                 except:
                     type, value, traceback = sys.exc_info()
                     logError("runalyze error: " + str(value))
