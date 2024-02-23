@@ -17,7 +17,9 @@ Alternatively use the Docker config below.
 =======
 
 or include the few other (standard) packages needed:
-``` pip install -r requirements.txt  ```
+``` sh
+pip install -r requirements.txt 
+```
 
 - add data directory to your folder ``` mkdir data ```
 
@@ -32,22 +34,48 @@ FIT files are downloaded into /data and pushed to runanalyze, once downloaded th
 # Docker
 Use Docker Image with local mounts of data/ and zrconfig.py/
 
-``` docker-compose up -d --build ```
+``` sh
+docker-compose up -d --build
+```
 
 Then start with
 
-``` docker exec zwiftrunalyze_app_1 python3 main.py ```
+``` sh
+docker exec zwiftrunalyze_app_1 python3 main.py
+```
 
 which can be added to the host system's crontab
 
-``` crontab -e ```
+``` sh
+crontab -e
+```
 
 e.g. run every evening at 22:30h:
 
-``` 30 22 * * * docker exec zwiftrunalyze_app_1 python3 main.py ```
+``` sh
+30 22 * * * docker exec zwiftrunalyze_app_1 python3 main.py
+```
 
 # Run locally
-Simple: ``` python3 main.py ``` or ```chmod +x main.py ``` and ```./main.py ```.
+Simple: 
+
+``` sh
+python3 main.py
+``` 
+or 
+
+``` sh
+chmod +x main.py
+```
+and
+
+``` sh
+./main.py
+```
+.
 
 Optional argument: Download only after date:
-``` python3 main.py YYYY-MM-DD ``` will skip any zwift acitivies ended before YYYY-MM-DD
+``` sh
+python3 main.py YYYY-MM-DD
+```
+will skip any zwift acitivies ended before YYYY-MM-DD
