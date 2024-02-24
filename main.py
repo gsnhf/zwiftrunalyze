@@ -50,7 +50,7 @@ async def download_file(activity, fileName, runtoken):
         pass
 
 def main():
-    logging.basicConfig(filename='data/zwiftrunalyze.log', encoding='utf-8', level=logging.INFO)
+    logging.basicConfig(filename='data/ZwiftRunalyze.log', encoding='utf-8', level=logging.INFO)
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
     # Initialize Client
