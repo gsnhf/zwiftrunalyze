@@ -1,5 +1,6 @@
 import logging
 import asyncio
+from pickle import TRUE
 import sys
 import json
 import os.path
@@ -36,8 +37,8 @@ def GetFitFilesFromMyWhooshServer():
         'email': mywhooshuser,
     }
     response = requests.post('https://event.mywhoosh.com/api/auth/login', cookies=cookies, headers=headers, json=json_data) 
-    content = str(response.content)
     contentJson = response.json()
+
     data = contentJson.get('data')
     user = data.get('user')
     files = user.get('files')
@@ -54,21 +55,40 @@ def main():
 
     fitFilesJsonPath = "data/myWhooshFitFiles.json"
 
-    # die Datei myWhooshFitFiles laden
+    # load previously data
     if os.path.isfile(fitFilesJsonPath):
-        with open(fitFilesJsonPath) as f:
-            fitFilesJson = json.load(f)
-            print(fitFilesJson)
+        with open(fitFilesJsonPath) as fitFilesJson:
+            fitFilesJson = json.load(fitFilesJson)
 
-    # daten vom server holen
-    files = GetFitFilesFromMyWhooshServer()
-    # fehlende hinzufügen
+    # get data from mywhoosh server
+    filesFromServer = GetFitFilesFromMyWhooshServer()
+
+    # add missing items
+    itemsToAdd = []
+    for fileFromServer in filesFromServer:
+        id = fileFromServer.get('id')
+        found = False
+        for fitFile in fitFilesJson.get('files'):
+            if fitFile.get('id') == id:
+                found = True
+                break
+        
+        if not found:
+            itemsToAdd.append(fileFromServer)
+
+    for foundItem in itemsToAdd:
+        fitFilesJson.get('files').append(foundItem)
+
+    if len(itemsToAdd)>0:
+        with open(fitFilesJsonPath, "w") as fitFilesFile:
+            json.dump(fitFilesJson, fitFilesFile, indent=2)
+
     # mit dem letzten uploaddatum vergleichen
     # noch nicht geuploadete files downloaden
     # nicht hochgeladene files nach runalyze hochladen
 
     createTimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    abc = {'timestamp': createTimestamp, 'files': files}
+    abc = {'timestamp': createTimestamp, 'files': filesFromServer}
     
     with open(fitFilesJsonPath, "w") as fitFilesFile:
         json.dump(abc, fitFilesFile, indent=2)
