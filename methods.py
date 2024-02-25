@@ -34,13 +34,16 @@ async def upload(session, fileName, runtoken):
         logError("runalyze error: " + str(value))
         pass
 
-async def uploadToRunalyze(link, fileName, runtoken):
+async def uploadToRunalyze(link, fileName, runtoken, sessionKey):
     try:
       async with aiohttp.ClientSession() as session:
-        async with session.get(link) as response:
-            asyncio.run(write_fitFile(fileName, response))
+        cookies = {
+         'mywhooshweb_session': sessionKey
+        }
+        async with session.get(link, cookies=cookies) as response:
+            await write_fitFile(fileName, response)
             if runtoken:
-                asyncio.run(upload(session, fileName, runtoken))
+                await upload(session, fileName, runtoken)
                 
     except:
         type, value, traceback = sys.exc_info()

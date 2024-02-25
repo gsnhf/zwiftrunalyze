@@ -10,7 +10,7 @@ from zrconfig import mywhooshuser, mywhooshpwd, runtoken
 
 from methods import log, logError, uploadToRunalyze
 
-def GetFitFilesFromMyWhooshServer():
+def Login():
     cookies = {}
 
     headers = {
@@ -31,6 +31,9 @@ def GetFitFilesFromMyWhooshServer():
         'email': mywhooshuser,
     }
     response = requests.post('https://event.mywhoosh.com/api/auth/login', cookies=cookies, headers=headers, json=json_data) 
+    return response
+
+def GetFitFilesFromMyWhooshServer(response):
     contentJson = response.json()
 
     data = contentJson.get('data')
@@ -58,7 +61,11 @@ def main():
         fitFilesJson = {'timestamp': createTimestamp, 'files': []}
 
     # get data from mywhoosh server
-    filesFromServer = GetFitFilesFromMyWhooshServer()
+    response = Login()
+    cook = response.cookies.get_dict()
+    sessionKey = cook['mywhooshweb_session']
+
+    filesFromServer = GetFitFilesFromMyWhooshServer(response)
 
     # add missing items
     itemsToAdd = []
@@ -86,8 +93,8 @@ def main():
     # nicht hochgeladene files nach runalyze hochladen
             
     link = fitFilesJson.get('files')[0].get('url')
-    fitFileName = "myWhoosh_" + fitFilesJson.get('files')[0].get('id') + ".fit"
+    fitFileName = "data/" + "myWhoosh_" + fitFilesJson.get('files')[0].get('id') + ".fit"
             
-    asyncio.run(uploadToRunalyze(link, fitFileName, runtoken))
+    asyncio.run(uploadToRunalyze(link, fitFileName, runtoken, sessionKey))
 
 main()
