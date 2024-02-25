@@ -8,7 +8,7 @@ import sys
 from datetime import datetime
 from zrconfig import mywhooshuser, mywhooshpwd, runtoken
 
-from methods import log, logError, uploadToRunalyze
+from methods import log, logError, uploadToRunalyze, Portal
 
 def Login():
     cookies = {}
@@ -92,9 +92,11 @@ def main():
     # noch nicht geuploadete files downloaden
     # nicht hochgeladene files nach runalyze hochladen
             
-    link = fitFilesJson.get('files')[0].get('url')
+    link = 'https://event.mywhoosh.com/api/auth/download/file/' + fitFilesJson.get('files')[0].get('id')
     fitFileName = "data/" + "myWhoosh_" + fitFilesJson.get('files')[0].get('id') + ".fit"
             
-    asyncio.run(uploadToRunalyze(link, fitFileName, runtoken, sessionKey))
+    token = response.json().get('data').get('token')
+    
+    asyncio.run(uploadToRunalyze(link, Portal.MyWhoosh, fitFileName, runtoken, sessionKey, token))
 
 main()
