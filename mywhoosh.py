@@ -1,14 +1,12 @@
-import logging
-import sys
 import json
+import logging
 import os.path
 import requests
-import pandas as pd
 
 from datetime import datetime
 from zrconfig import mywhooshuser, mywhooshpwd
 
-from methods import log, logError, download_file
+from methods import log, logError, uploadToRunalyze
 
 def GetFitFilesFromMyWhooshServer():
     cookies = {}
@@ -73,7 +71,7 @@ def main():
     for foundItem in itemsToAdd:
         fitFilesJson.get('files').append(foundItem)
 
-    if len(itemsToAdd)>0:
+    if len(itemsToAdd) > 0:
         with open(fitFilesJsonPath, "w") as fitFilesFile:
             json.dump(fitFilesJson, fitFilesFile, indent=2)
 
