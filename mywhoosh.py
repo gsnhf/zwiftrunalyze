@@ -1,6 +1,4 @@
 import logging
-import asyncio
-from pickle import TRUE
 import sys
 import json
 import os.path
@@ -10,11 +8,7 @@ import pandas as pd
 from datetime import datetime
 from zrconfig import mywhooshuser, mywhooshpwd
 
-def log(message):
-    logging.info(message)
-
-def logError(message):
-    logging.error(message)
+from methods import log, logError, download_file
 
 def GetFitFilesFromMyWhooshServer():
     cookies = {}
