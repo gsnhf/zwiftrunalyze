@@ -1,10 +1,12 @@
+import asyncio
 import json
 import logging
 import os.path
 import requests
+import sys
 
 from datetime import datetime
-from zrconfig import mywhooshuser, mywhooshpwd
+from zrconfig import mywhooshuser, mywhooshpwd, runtoken
 
 from methods import log, logError, uploadToRunalyze
 
@@ -46,11 +48,14 @@ def main():
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))   
 
     fitFilesJsonPath = "data/myWhooshFitFiles.json"
+    createTimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # load previously data
     if os.path.isfile(fitFilesJsonPath):
         with open(fitFilesJsonPath) as fitFilesJson:
             fitFilesJson = json.load(fitFilesJson)
+    else:
+        fitFilesJson = {'timestamp': createTimestamp, 'files': []}
 
     # get data from mywhoosh server
     filesFromServer = GetFitFilesFromMyWhooshServer()
@@ -72,17 +77,17 @@ def main():
         fitFilesJson.get('files').append(foundItem)
 
     if len(itemsToAdd) > 0:
+        fitFilesJson['timestamp'] = createTimestamp
         with open(fitFilesJsonPath, "w") as fitFilesFile:
             json.dump(fitFilesJson, fitFilesFile, indent=2)
 
     # mit dem letzten uploaddatum vergleichen
     # noch nicht geuploadete files downloaden
     # nicht hochgeladene files nach runalyze hochladen
-
-    createTimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    abc = {'timestamp': createTimestamp, 'files': filesFromServer}
-    
-    with open(fitFilesJsonPath, "w") as fitFilesFile:
-        json.dump(abc, fitFilesFile, indent=2)
+            
+    link = fitFilesJson.get('files')[0].get('url')
+    fitFileName = "myWhoosh_" + fitFilesJson.get('files')[0].get('id') + ".fit"
+            
+    asyncio.run(uploadToRunalyze(link, fitFileName, runtoken))
 
 main()
