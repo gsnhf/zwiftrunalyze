@@ -85,18 +85,21 @@ def main():
 
     if len(itemsToAdd) > 0:
         fitFilesJson['timestamp'] = createTimestamp
+        fitFilesJson.get('files').sort(key = lambda x:x['uploaded_at'])
         with open(fitFilesJsonPath, "w") as fitFilesFile:
             json.dump(fitFilesJson, fitFilesFile, indent=2)
 
     # mit dem letzten uploaddatum vergleichen
     # noch nicht geuploadete files downloaden
     # nicht hochgeladene files nach runalyze hochladen
-            
-    link = 'https://event.mywhoosh.com/api/auth/download/file/' + fitFilesJson.get('files')[0].get('id')
-    fitFileName = "data/" + "myWhoosh_" + fitFilesJson.get('files')[0].get('id') + ".fit"
+
+    x = fitFilesJson.get('files')
+    searchId = x[len(x) - 1].get('id')
+    fitFileName = "data/" + "myWhoosh_" + searchId + ".fit"
             
     token = response.json().get('data').get('token')
-    
+    link = 'https://event.mywhoosh.com/api/auth/download/file/' + searchId
+
     asyncio.run(uploadToRunalyze(link, Portal.MyWhoosh, fitFileName, runtoken, sessionKey, token))
 
 main()
