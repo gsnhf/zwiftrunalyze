@@ -70,11 +70,13 @@ async def uploadToRunalyze(link, portal, fileName, runtoken, sessionKey, token):
                 x = await response1.content.read()
                 y = json.loads(x.decode("utf8"))
                 link = y.get('data').get('data')
+
+            headers.pop('authorization')
+
         elif portal == Portal.Zwift:
             cookies = {}
             headers = {}
             
-        headers.pop('authorization')
         async with session.get(link, cookies=cookies, headers=headers) as response:
             await write_fitFile(fileName, response)
             if runtoken:
