@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 import os.path
+import pandas as pd
 import requests
 import sys
 
@@ -53,6 +54,12 @@ def main():
     fitFilesJsonPath = "data/myWhooshFitFiles.json"
     createTimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+    # Import only after importdate
+    if len(sys.argv) > 1:
+        importdate = pd.to_datetime(sys.argv[1])
+    else:
+        importdate = pd.to_datetime(datetime.now())
+
     # load previously data
     if os.path.isfile(fitFilesJsonPath):
         with open(fitFilesJsonPath) as fitFilesJson:
@@ -94,12 +101,13 @@ def main():
     # nicht hochgeladene files nach runalyze hochladen
 
     x = fitFilesJson.get('files')
-    searchId = x[len(x) - 1].get('id')
-    fitFileName = "data/" + "myWhoosh_" + searchId + ".fit"
-            
-    token = response.json().get('data').get('token')
-    link = 'https://event.mywhoosh.com/api/auth/download/file/' + searchId
-
-    asyncio.run(uploadToRunalyze(link, Portal.MyWhoosh, fitFileName, runtoken, sessionKey, token))
+    
+    for ff in x:
+        if pd.to_datetime(ff.get('uploaded_at')).tz_convert(None) > importdate:
+            searchId = ff.get('id')
+            fitFileName = "data/" + "myWhoosh_" + searchId + ".fit"
+            token = response.json().get('data').get('token')
+            link = 'https://event.mywhoosh.com/api/auth/download/file/' + searchId
+            asyncio.run(uploadToRunalyze(link, Portal.MyWhoosh, fitFileName, runtoken, sessionKey, token))
 
 main()
