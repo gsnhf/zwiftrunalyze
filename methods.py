@@ -1,7 +1,6 @@
 
 import aiofiles as aiof
 import aiohttp
-import asyncio
 import json
 import logging
 import sys
