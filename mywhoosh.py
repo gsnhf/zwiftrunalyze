@@ -103,7 +103,7 @@ def main():
     x = fitFilesJson.get('files')
     
     for ff in x:
-        if pd.to_datetime(ff.get('uploaded_at')).tz_convert(None) > importdate:
+        if pd.to_datetime(ff.get('uploaded_at')).tz_convert(None) >= importdate:
             searchId = ff.get('id')
             fitFileName = "data/" + "myWhoosh_" + searchId + ".fit"
             token = response.json().get('data').get('token')
