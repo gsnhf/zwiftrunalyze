@@ -38,10 +38,16 @@ Use Docker Image with local mounts of data/ and zrconfig.py/
 docker-compose up -d --build
 ```
 
-Then start with
+Then start zwift import with
 
 ``` sh
 docker exec zwiftrunalyze_app_1 python3 main.py
+```
+
+or MyWhoosh import with 
+
+``` sh
+docker exec zwiftrunalyze_app_1 python3 mywhoosh.py
 ```
 
 which can be added to the host system's crontab
