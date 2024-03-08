@@ -58,7 +58,8 @@ def main():
     if len(sys.argv) > 1:
         importdate = pd.to_datetime(sys.argv[1])
     else:
-        importdate = pd.to_datetime(datetime.now())
+        datetime_str = pd.to_datetime(datetime.now()).strftime("%Y.%m.%d")
+        importdate = datetime.strptime(datetime_str, '%Y.%m.%d')
 
     # load previously data
     if os.path.isfile(fitFilesJsonPath):
