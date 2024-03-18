@@ -2,3 +2,4 @@ date/
 **/__pycache__/
 zrconfig.py
 data/
+mywhooshResponse.json
