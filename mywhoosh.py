@@ -1,6 +1,5 @@
 import asyncio
 import json
-import logging
 import os.path
 import pandas as pd
 import requests
@@ -48,9 +47,6 @@ def GetFitFilesFromMyWhooshServer(response):
 
 
 def main():
-    logging.basicConfig(filename='data/MywhooshRunalyze.log', encoding='utf-8', level=logging.INFO)
-    logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))   
-
     fitFilesJsonPath = "data/myWhooshFitFiles.json"
     createTimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -61,6 +57,7 @@ def main():
         datetime_str = pd.to_datetime(datetime.now()).strftime("%Y.%m.%d")
         importdate = datetime.strptime(datetime_str, '%Y.%m.%d')
 
+    log("ImportDate: " + str(importdate))
     # load previously data
     if os.path.isfile(fitFilesJsonPath):
         with open(fitFilesJsonPath) as fitFilesJson:
@@ -68,7 +65,7 @@ def main():
     else:
         fitFilesJson = {'timestamp': createTimestamp, 'files': []}
 
-    # get data from mywhoosh server
+    # get data from mywhoosh server eva 14 uhr, jane 9:10
     response = Login()
     cook = response.cookies.get_dict()
     sessionKey = cook['mywhooshweb_session']

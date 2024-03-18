@@ -1,6 +1,5 @@
 import asyncio
 import json
-import logging
 import os.path
 import pandas as pd
 import sys
@@ -12,9 +11,6 @@ from zrconfig import zwiftuser, zwiftpwd, runtoken
 from methods import Portal, log, logError, uploadToRunalyze
 
 def main():
-    logging.basicConfig(filename='data/ZwiftRunalyze.log', encoding='utf-8', level=logging.INFO)
-    logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
-
     # Initialize Client
     client = Client(zwiftuser, zwiftpwd)
     zwiftProfile = client.get_profile()

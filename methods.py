@@ -7,19 +7,23 @@ import sys
 
 from enum import Enum
 
+logging.basicConfig(filename='data/Runalyze.log',filemode='a', encoding='utf-8', level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.StreamHandler(sys.stdout)) 
+
 class Portal(Enum):
     Zwift = 1
     MyWhoosh = 2
 
 
 def log(message):
-    logging.info(message)
+    logger.info(message)
 
 def logError(message):
-    logging.error(message)
+    logger.error(message)
 
 async def write_fitFile(fileName, response):
-    logging.debug(str(response.text))
+    logger.debug(str(response.text))
     async with aiof.open(fileName, "wb") as fitFile:
         empty_bytes = b''
         result = empty_bytes
