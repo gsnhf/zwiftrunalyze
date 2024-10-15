@@ -6,7 +6,7 @@ import requests
 import sys
 
 from datetime import datetime
-from zrconfig import mywhooshuser, mywhooshpwd, runtoken
+from zrconfig import mywhooshuser, mywhooshpwd, runalyzeToken
 
 from methods import log, logError, uploadToRunalyze, Portal
 
@@ -106,6 +106,6 @@ def main():
             fitFileName = "data/" + "myWhoosh_" + searchId + ".fit"
             token = response.json().get('data').get('token')
             link = 'https://event.mywhoosh.com/api/auth/download/file/' + searchId
-            asyncio.run(uploadToRunalyze(link, Portal.MyWhoosh, fitFileName, runtoken, sessionKey, token))
+            asyncio.run(uploadToRunalyze(link, Portal.MyWhoosh, fitFileName, runalyzeToken, sessionKey, token))
 
 main()

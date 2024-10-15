@@ -38,10 +38,10 @@ async def write_fitFile(fileName, response):
         await fitFile.write(result)
         await fitFile.flush()
 
-async def upload(session, fileName, runtoken):
+async def upload(session, fileName, runalyzeToken):
     try:
-        log(runtoken)
-        async with session.post(RUNALYZE_UPLOAD_LINK, data={'file': open(fileName, "rb")}, headers={"token": runtoken}) as responsePost:
+        log(runalyzeToken)
+        async with session.post(RUNALYZE_UPLOAD_LINK, data={'file': open(fileName, "rb")}, headers={"token": runalyzeToken}) as responsePost:
             log("post finished: " + str(responsePost.text))
     except:
         type, value, traceback = sys.exc_info()
@@ -54,7 +54,7 @@ async def downloadFromZwift():
 async def downloadFromMyWhoosh():
     pass
 
-async def uploadToRunalyze(link, portal, fileName, runtoken, sessionKey, token):
+async def uploadToRunalyze(link, portal, fileName, runalyzeToken, sessionKey, token):
     try:
       async with aiohttp.ClientSession() as session:
         if portal == Portal.MyWhoosh:
@@ -85,8 +85,8 @@ async def uploadToRunalyze(link, portal, fileName, runtoken, sessionKey, token):
             
         async with session.get(link, cookies=cookies, headers=headers) as response:
             await write_fitFile(fileName, response)
-            if runtoken:
-                await upload(session, fileName, runtoken)
+            if runalyzeToken:
+                await upload(session, fileName, runalyzeToken)
                 
     except:
         type, value, traceback = sys.exc_info()

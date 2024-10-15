@@ -5,7 +5,7 @@ import sys
 
 from datetime import datetime
 from zwift import Client
-from zrconfig import zwiftuser, zwiftpwd, runtoken
+from zrconfig import zwiftuser, zwiftpwd, runalyzeToken
 
 from methods import Portal, log, logError, uploadToRunalyze, convertDateTimeToUtcDate
 
@@ -44,7 +44,7 @@ def main():
 
             log("Processing: " + activity["name"] + " - Date: " + convertDateTimeToUtcDate(activity["endDate"]).strftime("%Y-%m-%d") + " - " + str(activity["distanceInMeters"] / 1000) + "km")
             link = "https://" + activity["fitFileBucket"] + ".s3.amazonaws.com/" + activity["fitFileKey"]
-            asyncio.run(uploadToRunalyze(link, Portal.Zwift, fitFileName, runtoken, None, None))
+            asyncio.run(uploadToRunalyze(link, Portal.Zwift, fitFileName, runalyzeToken, None, None))
     except:
         type, value, traceback = sys.exc_info()
         logError(str(value))
