@@ -10,7 +10,7 @@ from zrconfig import zwiftuser, zwiftpwd, runtoken
 
 from methods import Portal, log, logError, uploadToRunalyze, convertDateTimeToUtcDate
 
-from constants import FOLDER_DATA, RUNALYZE_UPLOAD_LINK
+from constants import FOLDER_DATA
 
 def main():
     # Initialize Client
@@ -37,7 +37,7 @@ def main():
                 log("Activity ended after set importdate. Skipping.")
                 continue
 
-            fitFileName = "data/" + pd.to_datetime(activity["endDate"]).strftime("%Y%m%d_%H%M%S") + ".fit"
+            fitFileName = FOLDER_DATA + pd.to_datetime(activity["endDate"]).strftime("%Y%m%d_%H%M%S") + ".fit"
 
             if os.path.isfile(fitFileName):
                 log("Already downloaded. Skipping")

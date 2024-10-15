@@ -8,6 +8,8 @@ import pandas as pd
 
 from enum import Enum
 
+from constants import RUNALYZE_UPLOAD_LINK
+
 logging.basicConfig(filename='data/Runalyze.log',filemode='a', encoding='utf-8', level=logging.INFO)
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler(sys.stdout)) 
@@ -39,7 +41,7 @@ async def write_fitFile(fileName, response):
 async def upload(session, fileName, runtoken):
     try:
         log(runtoken)
-        async with session.post("https://runalyze.com/api/v1/activities/uploads", data={'file': open(fileName, "rb")}, headers={"token": runtoken}) as responsePost:
+        async with session.post(RUNALYZE_UPLOAD_LINK, data={'file': open(fileName, "rb")}, headers={"token": runtoken}) as responsePost:
             log("post finished: " + str(responsePost.text))
     except:
         type, value, traceback = sys.exc_info()
