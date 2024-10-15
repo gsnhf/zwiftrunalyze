@@ -48,12 +48,6 @@ async def upload(session, fileName, runalyzeToken):
         logError("runalyze error: " + str(value))
         pass
 
-async def downloadFromZwift():
-    pass
-
-async def downloadFromMyWhoosh():
-    pass
-
 async def uploadToRunalyze(link, portal, fileName, runalyzeToken, sessionKey, token):
     try:
       async with aiohttp.ClientSession() as session:

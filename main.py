@@ -18,7 +18,7 @@ def main():
     zwiftActivities = client.get_activity(zwiftProfile.profile["id"])
     activitiesList = zwiftActivities.list()
 
-    # Import only after importdate
+    # Import only after importdate (default: today)
     if len(sys.argv) > 1:
         importdate = convertDateTimeToUtcDate(sys.argv[1]).date()
     else:
