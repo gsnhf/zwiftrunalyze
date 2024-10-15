@@ -10,6 +10,8 @@ from zrconfig import zwiftuser, zwiftpwd, runtoken
 
 from methods import Portal, log, logError, uploadToRunalyze
 
+from constants import FOLDER_DATA, RUNALYZE_UPLOAD_LINK
+
 def main():
     # Initialize Client
     client = Client(zwiftuser, zwiftpwd)
