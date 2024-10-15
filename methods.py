@@ -93,8 +93,7 @@ async def uploadToRunalyze(link, portal, fileName, runtoken, sessionKey, token):
         logError(str(value))
         pass
 
-def convertDateTimeToUtcDate(local_datetime, local_timezone='Europe/Berlin'):
-    local_time = pd.to_datetime(local_datetime).tz_localize(local_timezone)
-    utc_time = local_time.tz_convert('UTC')
-    
-    return utc_time.Date() 
+def convertDateTimeToUtcDate(datetime, local_timezone='Europe/Berlin'):
+    local_time = pd.to_datetime(datetime).tz_localize(local_timezone)
+    utc_time = local_time.tz_convert('UTC')    
+    return utc_time 

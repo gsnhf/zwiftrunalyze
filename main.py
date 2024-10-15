@@ -1,7 +1,6 @@
 import asyncio
 import json
 import os.path
-import pandas as pd
 import sys
 
 from datetime import datetime
@@ -21,9 +20,9 @@ def main():
 
     # Import only after importdate
     if len(sys.argv) > 1:
-        importdate = convertDateTimeToUtcDate(sys.argv[1])
+        importdate = convertDateTimeToUtcDate(sys.argv[1]).Date()
     else:
-        importdate = convertDateTimeToUtcDate(datetime.now())
+        importdate = convertDateTimeToUtcDate(datetime.now()).Date()
 
     try:
         if not os.path.exists("data"):
@@ -33,17 +32,17 @@ def main():
             json.dump(activitiesList, fitFilesFile, indent=2)
 
         for activity in activitiesList:
-            if pd.to_datetime(activity["endDate"]).tz_convert(None) > importdate:
+            if convertDateTimeToUtcDate(activity["endDate"]) > importdate: # pd.to_datetime(activity["endDate"]).tz_convert(None) > importdate:
                 log("Activity ended after set importdate. Skipping.")
                 continue
 
-            fitFileName = FOLDER_DATA + pd.to_datetime(activity["endDate"]).strftime("%Y%m%d_%H%M%S") + ".fit"
+            fitFileName = FOLDER_DATA + convertDateTimeToUtcDate(activity["endDate"]).strftime("%Y%m%d_%H%M%S") + ".fit"
 
             if os.path.isfile(fitFileName):
                 log("Already downloaded. Skipping")
                 continue
 
-            log("Processing: " + activity["name"] + " - Date: " + pd.to_datetime(activity["endDate"]).strftime("%Y-%m-%d") + " - " + str(activity["distanceInMeters"] / 1000) + "km")
+            log("Processing: " + activity["name"] + " - Date: " + convertDateTimeToUtcDate(activity["endDate"]).strftime("%Y-%m-%d") + " - " + str(activity["distanceInMeters"] / 1000) + "km")
             link = "https://" + activity["fitFileBucket"] + ".s3.amazonaws.com/" + activity["fitFileKey"]
             asyncio.run(uploadToRunalyze(link, Portal.Zwift, fitFileName, runtoken, None, None))
     except:
