@@ -8,7 +8,7 @@ from datetime import datetime
 from zwift import Client
 from zrconfig import zwiftuser, zwiftpwd, runtoken
 
-from methods import Portal, log, logError, uploadToRunalyze
+from methods import Portal, log, logError, uploadToRunalyze, convertDateTimeToUtcDate
 
 from constants import FOLDER_DATA, RUNALYZE_UPLOAD_LINK
 
@@ -21,9 +21,9 @@ def main():
 
     # Import only after importdate
     if len(sys.argv) > 1:
-        importdate = pd.to_datetime(sys.argv[1])
+        importdate = convertDateTimeToUtcDate(sys.argv[1])
     else:
-        importdate = pd.to_datetime(datetime.now())
+        importdate = convertDateTimeToUtcDate(datetime.now())
 
     try:
         if not os.path.exists("data"):
