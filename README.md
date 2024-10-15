@@ -103,117 +103,108 @@ s
 
 ## REST
 
-Um einen REST-Service in Python zu implementieren, kannst du verschiedene Frameworks verwenden. Eines der beliebtesten ist Flask, da es leichtgewichtig und einfach zu verwenden ist. Hier ist ein einfaches Beispiel, wie du einen REST-Service mit Flask einrichten kannst.
+Um einen Python REST-Service mit Docker Compose zu hosten, kannst du die folgenden Schritte ausführen. Wir verwenden ein einfaches Beispiel mit Flask, um den Prozess zu demonstrieren.
 
-### Schritt 1: Flask installieren
+### Schritt 1: Erstelle die Projektstruktur
 
-Stelle sicher, dass du Flask installiert hast. Du kannst es mit pip installieren:
+Erstelle ein Verzeichnis für dein Projekt und lege die folgenden Dateien an:
 
-```bash
-pip install Flask
+```
+my_flask_app/
+├── app.py
+├── requirements.txt
+└── docker-compose.yml
 ```
 
-### Schritt 2: Einen einfachen REST-Service erstellen
+### Schritt 2: Erstelle die Flask-Anwendung
 
-Hier ist ein einfaches Beispiel für einen REST-Service, der grundlegende CRUD-Operationen (Create, Read, Update, Delete) unterstützt:
+**`app.py`:**
 
 ```python
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 
 app = Flask(__name__)
 
-# Beispiel-Daten (in der Praxis würdest du wahrscheinlich eine Datenbank verwenden)
-data = {
-    1: {"name": "Item 1", "description": "This is item 1"},
-    2: {"name": "Item 2", "description": "This is item 2"},
-}
-
-# GET: Alle Elemente abrufen
 @app.route('/items', methods=['GET'])
 def get_items():
-    return jsonify(data)
-
-# GET: Ein bestimmtes Element abrufen
-@app.route('/items/<int:item_id>', methods=['GET'])
-def get_item(item_id):
-    item = data.get(item_id)
-    if item:
-        return jsonify(item)
-    else:
-        return jsonify({"error": "Item not found"}), 404
-
-# POST: Ein neues Element erstellen
-@app.route('/items', methods=['POST'])
-def create_item():
-    new_id = max(data.keys()) + 1
-    new_item = request.json
-    data[new_id] = new_item
-    return jsonify(new_item), 201
-
-# PUT: Ein vorhandenes Element aktualisieren
-@app.route('/items/<int:item_id>', methods=['PUT'])
-def update_item(item_id):
-    item = data.get(item_id)
-    if item:
-        item.update(request.json)
-        return jsonify(item)
-    else:
-        return jsonify({"error": "Item not found"}), 404
-
-# DELETE: Ein Element löschen
-@app.route('/items/<int:item_id>', methods=['DELETE'])
-def delete_item(item_id):
-    if item_id in data:
-        del data[item_id]
-        return jsonify({"message": "Item deleted"}), 204
-    else:
-        return jsonify({"error": "Item not found"}), 404
+    return jsonify({"items": ["item1", "item2", "item3"]})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
 ```
 
-### Schritt 3: Den Service ausführen
+### Schritt 3: Erstelle die Anforderungen
 
-Speichere den obigen Code in einer Datei, z.B. `app.py`, und führe sie aus:
+**`requirements.txt`:**
+
+```
+Flask==2.0.3
+```
+
+### Schritt 4: Erstelle die Docker-Compose-Konfiguration
+
+**`docker-compose.yml`:**
+
+```yaml
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+```
+
+### Schritt 5: Erstelle das Dockerfile
+
+Erstelle eine Datei mit dem Namen `Dockerfile` im gleichen Verzeichnis:
+
+**`Dockerfile`:**
+
+```dockerfile
+# Basis-Image
+FROM python:3.9-slim
+
+# Arbeitsverzeichnis setzen
+WORKDIR /app
+
+# Anforderungen installieren
+COPY requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Anwendung kopieren
+COPY app.py app.py
+
+# Anwendung starten
+CMD ["python", "app.py"]
+```
+
+### Schritt 6: Baue und starte die Anwendung mit Docker Compose
+
+Navigiere in dein Projektverzeichnis `my_flask_app` und führe den folgenden Befehl aus:
 
 ```bash
-python app.py
+docker-compose up --build
 ```
 
-Der Server läuft standardmäßig auf `http://127.0.0.1:5000`.
+- `--build`: Baut die Images neu, falls Änderungen vorgenommen wurden.
 
-### Schritt 4: API testen
+### Schritt 7: Teste den REST-Service
 
-Du kannst die API mit Tools wie **Postman** oder **curl** testen.
+Sobald der Container läuft, kannst du den REST-Service testen, indem du im Browser oder mit einem Tool wie `curl` oder Postman auf die URL zugreifst:
 
-#### Beispiele:
+```bash
+curl http://localhost:5000/items
+```
 
-- **Alle Elemente abrufen**:
-  ```bash
-  curl http://127.0.0.1:5000/items
-  ```
+### Schritt 8: Stoppe die Anwendung
 
-- **Ein bestimmtes Element abrufen**:
-  ```bash
-  curl http://127.0.0.1:5000/items/1
-  ```
+Um die Anwendung zu stoppen, kannst du im Terminal `Ctrl + C` drücken oder den folgenden Befehl ausführen:
 
-- **Ein neues Element erstellen**:
-  ```bash
-  curl -X POST -H "Content-Type: application/json" -d '{"name": "Item 3", "description": "This is item 3"}' http://127.0.0.1:5000/items
-  ```
-
-- **Ein Element aktualisieren**:
-  ```bash
-  curl -X PUT -H "Content-Type: application/json" -d '{"description": "Updated description"}' http://127.0.0.1:5000/items/1
-  ```
-
-- **Ein Element löschen**:
-  ```bash
-  curl -X DELETE http://127.0.0.1:5000/items/1
-  ```
+```bash
+docker-compose down
+```
 
 ### Fazit
 
-Das ist eine einfache Möglichkeit, einen REST-Service in Python mit Flask zu erstellen. Du kannst den Service weiter anpassen, um zusätzliche Funktionen hinzuzufügen, Fehlerbehandlung zu implementieren oder eine Datenbank wie SQLite oder PostgreSQL zu integrieren. Wenn du weitere Fragen hast, lass es mich wissen!
+Mit diesen Schritten hast du einen Python REST-Service mit Docker Compose erfolgreich gehostet. Du kannst die Anwendung weiter anpassen, zusätzliche Dienste hinzufügen oder die Konfiguration nach Bedarf erweitern. Wenn du Fragen hast oder Unterstützung benötigst, lass es mich wissen!
