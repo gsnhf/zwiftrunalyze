@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from zwift import Client
 from zrconfig import zwiftuser, zwiftpwd
 
@@ -23,9 +23,16 @@ def get_activityById_internal(activtiy_id):
     return activity
 
 
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
+@app.route('/')
+def index():
+    items = ['Apfel', 'Banane', 'Orange', 'Mango', 'Traube']
+    items = []
+    activitis = get_activities_internal()
+
+    for activity in activitis:
+        items.append(activity["id"])
+
+    return render_template('index.html', items=items)
 
 
 @app.route('/activities', methods=['GET'])
