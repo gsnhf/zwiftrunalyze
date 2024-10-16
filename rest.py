@@ -7,6 +7,10 @@ app = Flask(__name__)
 client = Client(zwiftuser, zwiftpwd)
 zwiftProfile = client.get_profile()
 
+@app.route("/")
+def hello_world():
+    return "<p>Hello, World!</p>"
+
 @app.route('/activities', methods=['GET'])
 def get_activities():
     activitiesList = client.get_activity(zwiftProfile.profile["id"]).list()
