@@ -30,7 +30,7 @@ def index():
     activitis = get_activities_internal()
 
     for activity in activitis:
-        items.append(activity["id"])
+        items.append(activity)
 
     return render_template('index.html', items=items)
 
