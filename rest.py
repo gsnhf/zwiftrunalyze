@@ -25,9 +25,8 @@ def get_activityById_internal(activtiy_id):
 
 @app.route('/')
 def index():
-    items = ['Apfel', 'Banane', 'Orange', 'Mango', 'Traube']
-    items = []
     activitis = get_activities_internal()
+    items = []
 
     for activity in activitis:
         items.append(activity)
@@ -53,20 +52,6 @@ def get_linkById(activtiy_id):
     link = "https://" + activity["fitFileBucket"] + \
         ".s3.amazonaws.com/" + activity["fitFileKey"]
     return link
-
-
-""" 
-@app.route('/activities/<int:profile_id>', methods=['GET'])
-def get_activities(profile_id):
-    activitiesList = client.get_activity(profile_id).list()
-    return jsonify(activitiesList)
-
-@app.route('/activities/<int:profile_id>/<int:activtiy_id>', methods=['GET'])
-def get_activities(profile_id, activtiy_id):
-    activitiesList = client.get_activity(profile_id).list()
-    activity = activitiesList.get(activtiy_id)
-    return jsonify(activity)
-"""
 
 data = {
     1: {"name": "Item 1", "description": "This is item 1"},
