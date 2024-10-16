@@ -1,6 +1,6 @@
 from flask import Flask, jsonify
 from zwift import Client
-from zrconfig import zwiftuser, zwiftpwd, runalyzeToken
+from zrconfig import zwiftuser, zwiftpwd
 
 app = Flask(__name__)
 
