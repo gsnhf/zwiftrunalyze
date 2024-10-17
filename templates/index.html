@@ -12,10 +12,24 @@
 </head>
 <body class="bg-dark text-light">
     <div class="container-fluid mt-5">
-        <h1>ActivityList</h1>
-        <button id="darkModeToggle" class="btn btn-secondary">
-            <i class="bi bi-brightness-high-fill"></i>
-        </button>
+        <div class="container mt-5">
+            <h1>ActivityList</h1>
+            <button id="darkModeToggle" class="btn btn-secondary">
+                <i class="bi bi-brightness-high-fill"></i>
+            </button>
+            <form>
+                <div class="form-group">
+                    <label for="username">Benutzername</label>
+                    <input type="text" class="form-control" id="username" placeholder="Benutzername eingeben" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Passwort</label>
+                    <input type="password" class="form-control" id="password" placeholder="Passwort eingeben" required>
+                </div>
+                <!-- <button type="submit" class="btn btn-primary">Einloggen</button> -->
+            </form>
+        </div>
+        <div class="container mt-5">
     
         <ul id="myList" class="list-group">
         <!-- Jinja2 Schleife, um die Liste anzuzeigen -->
@@ -25,7 +39,7 @@
                     
                     <h5 class="mb-1"><i class="bi bi-activity"></i> {{ item["name"] }}</h5>
                     <small class="text-body-secondary">
-                        <button type="button" class="list-group-item list-group-item-action active" aria-current="true">
+                        <button type="button" class="list-group-item list-group-item-action active" aria-current="true" onclick="myFunction('{{ item }}')">
                             Upload to Runalyze 
                             <i class="bi bi-cloud-arrow-up"></i>
                         </button>
@@ -38,6 +52,7 @@
             </a>
         {% endfor %}
     </ul>
+</div>
 </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
@@ -63,6 +78,11 @@
                 toggleButton.innerHTML  = '<i class="bi bi-moon-fill"></i>';
             }
         });
+
+        function myFunction(item) {
+            alert("Item: " + item);
+            // Hier kannst du weitere Logik hinzufügen, um das Item zu verarbeiten
+        }
     </script>
 </body>
 </html>
