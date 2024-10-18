@@ -5,3 +5,4 @@ aiohttp
 zwift-client
 pyarrow
 Flask
+flask-cors
