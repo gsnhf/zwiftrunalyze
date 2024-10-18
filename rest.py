@@ -1,10 +1,12 @@
 from flask import Flask, jsonify, request, render_template
 from zwift import Client
 from zrconfig import zwiftuser, zwiftpwd
+from flask_cors import CORS
 
 import requests
 
 app = Flask(__name__)
+CORS(app)
 
 client = Client(zwiftuser, zwiftpwd)
 zwiftProfile = client.get_profile()
