@@ -82,10 +82,7 @@
 
         function uploadItem(item) {
             //alert("Item: " + item);
-            fetch('http://localhost:5000/transferfile/'+item, {
-                method: 'POST',
-                body: item
-            })
+            fetch('http://127.0.0.1:5000/transferfile/'+item)
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('result').innerText = JSON.stringify(data);
