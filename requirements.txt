@@ -5,5 +5,6 @@ aiohttp
 zwift-client
 pyarrow==14.0.0
 Flask
+flask[async]
 flask-cors
 protobuf==3.20.*

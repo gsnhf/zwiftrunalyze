@@ -6,8 +6,6 @@ ADD https://raw.githubusercontent.com/gsnhf/zwiftrunalyze/RestService/requiremen
 RUN git clone --branch RestService https://github.com/gsnhf/zwiftrunalyze.git
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
-# RUN pip install protobuf==3.20.*
 WORKDIR /zwiftrunalyze
-# CMD sleep infinity
 COPY . .
 CMD ["python", "rest.py"]

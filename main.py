@@ -20,9 +20,9 @@ def main():
 
     # Import only after importdate
     if len(sys.argv) > 1:
-        importdate = convertDateTimeToUtcDate(sys.argv[1]).Date()
+        importdate = convertDateTimeToUtcDate(sys.argv[1]).date()
     else:
-        importdate = convertDateTimeToUtcDate(datetime.now()).Date()
+        importdate = convertDateTimeToUtcDate(datetime.now()).date()
 
     try:
         if not os.path.exists("data"):

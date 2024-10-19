@@ -94,6 +94,9 @@ async def uploadToRunalyze(link, portal, fileName, runalyzeToken, sessionKey, to
         pass
 
 def convertDateTimeToUtcDate(datetime, local_timezone='Europe/Berlin'):
-    local_time = pd.to_datetime(datetime).tz_localize(local_timezone)
-    utc_time = local_time.tz_convert('UTC')    
-    return utc_time 
+    try:
+        local_time = pd.to_datetime(datetime).tz_localize(local_timezone)
+        utc_time = local_time.tz_convert('UTC')    
+        return utc_time 
+    except:
+        return datetime

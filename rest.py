@@ -2,10 +2,15 @@ from flask import Flask, jsonify, request, render_template
 from zwift import Client
 from zrconfig import zwiftuser, zwiftpwd, runalyzeToken
 from flask_cors import CORS
+import sys
 
 from constants import RUNALYZE_UPLOAD_LINK
 
 import requests
+
+import aiofiles as aiof
+import aiohttp
+import asyncio
 
 app = Flask(__name__)
 CORS(app)
@@ -73,31 +78,59 @@ def get_item(item_id):
     else:
         return jsonify({"error": "Item not found"}), 404
     
+async def read_bytes_from_stream(stream_reader, num_bytes):
+    data = await stream_reader.read(num_bytes)
+    return data
+
+async def fetch_file(url):
+    async with aiohttp.ClientSession() as session:
+        cookies = {}
+        headers = {}
+        async with session.get(url, cookies=cookies, headers=headers) as response:
+            #a= await response.read()
+            #return a
+            return  response.content.read()
+
+async def upload_file(url, file_content,activtiy_id):
+    async with aiohttp.ClientSession() as session:
+        data1 = aiohttp.FormData()
+        fname=str(activtiy_id)+'.fit'
+        data1.add_field('file', file_content, filename=fname, content_type='multipart/form-data')
+        
+        async with session.post(url, data={'file': data1}, headers={"token": runalyzeToken}) as response:
+            txt = await response.text()
+            print(txt)
+            return response
+    
 @app.route('/transferfile/<int:activtiy_id>', methods=['GET'])
-def transfer_file(activtiy_id):
-    # URL der Datei, die heruntergeladen werden soll
+async def transfer_file(activtiy_id):
     download_url = get_linkById(activtiy_id)
-    # URL des Services, zu dem die Datei hochgeladen werden soll
-    upload_url = RUNALYZE_UPLOAD_LINK # request.json.get('upload_url')
 
-    # Datei herunterladen
-    response = requests.get(download_url)
-    if response.status_code != 200:
-        return jsonify({"error": "Failed to download file"}), 400
+    file_content = await fetch_file(download_url)
+    upload_response = await upload_file(RUNALYZE_UPLOAD_LINK, file_content,activtiy_id)
 
-    # Datei hochladen
-    files = {"file": (str(activtiy_id)+".fit",response.content)}
+    txt1 = str(await upload_response.text())
+    txt = jsonify({"message": "File transferred successfully: " + txt1})
+    txt2 = await upload_response.text()
+    print(txt1)
+    print(txt2)
+    return txt, upload_response.status
 
-    headers = {"token": runalyzeToken}
-    # headers = {'Authorization': f'Bearer {runalyzeToken}'}
-
-    upload_response = requests.post(upload_url, files=files, headers=headers)
-    if upload_response.status_code  >= 400:
-        return jsonify({"error": "Failed to upload file"}), upload_response.status_code
-
-    return jsonify({"message": "File transferred successfully"}), upload_response.status_code
+    async with aiohttp.ClientSession() as session:
+        cookies = {}
+        headers = {}
+        async with session.get(download_url, cookies=cookies, headers=headers) as response:
+            try:
+                # await response.content.drain()
+                data = await read_bytes_from_stream(response.content, 1024)
+                async with session.post(RUNALYZE_UPLOAD_LINK, data={'file': (str(activtiy_id)+".fit",data)}, headers={"token": runalyzeToken}) as responsePost:
+                    return jsonify({"message": "File transferred successfully: " + str(responsePost.text)}), responsePost.status
+            except:
+                type, value, traceback = sys.exc_info()
+                return jsonify({"error": "Failed to upload file: " + str(value)}), responsePost.status
 
 
 if __name__ == '__main__':
     # app.run(port=5000)
     app.run(debug=True)
+# asyncio.run(main())
