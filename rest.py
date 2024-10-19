@@ -86,16 +86,16 @@ def transfer_file(activtiy_id):
         return jsonify({"error": "Failed to download file"}), 400
 
     # Datei hochladen
-    files = {"file": response.content}
+    files = {"file": (str(activtiy_id)+".fit",response.content)}
 
     headers = {"token": runalyzeToken}
     # headers = {'Authorization': f'Bearer {runalyzeToken}'}
 
     upload_response = requests.post(upload_url, files=files, headers=headers)
-    if upload_response.status_code != 200:
-        return jsonify({"error": "Failed to upload file"}), 400
+    if upload_response.status_code  >= 400:
+        return jsonify({"error": "Failed to upload file"}), upload_response.status_code
 
-    return jsonify({"message": "File transferred successfully"}), 200
+    return jsonify({"message": "File transferred successfully"}), upload_response.status_code
 
 
 if __name__ == '__main__':
