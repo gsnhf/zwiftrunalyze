@@ -6,3 +6,4 @@ zwift-client
 pyarrow
 Flask
 flask-cors
+protobuf==3.20.*
