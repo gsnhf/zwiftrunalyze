@@ -3,8 +3,7 @@ pandas
 aiofiles
 aiohttp
 zwift-client
-pyarrow==14.0.0
+protobuf==3.20.*
 Flask
 flask[async]
 flask-cors
-protobuf==3.20.*
