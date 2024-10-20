@@ -1,16 +1,13 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, render_template
 from zwift import Client
 from zrconfig import zwiftuser, zwiftpwd, runalyzeToken
 from flask_cors import CORS
-import sys
+import io
 
 from constants import RUNALYZE_UPLOAD_LINK
 
 import requests
-
-import aiofiles as aiof
 import aiohttp
-import asyncio
 
 app = Flask(__name__)
 CORS(app)
@@ -87,47 +84,28 @@ async def fetch_file(url):
         cookies = {}
         headers = {}
         async with session.get(url, cookies=cookies, headers=headers) as response:
-            #a= await response.read()
-            #return a
-            return  response.content.read()
+            return await response.content.read()
 
-async def upload_file(url, file_content,activtiy_id):
-    async with aiohttp.ClientSession() as session:
-        data1 = aiohttp.FormData()
-        fname=str(activtiy_id)+'.fit'
-        data1.add_field('file', file_content, filename=fname, content_type='multipart/form-data')
-        
-        async with session.post(url, data={'file': data1}, headers={"token": runalyzeToken}) as response:
-            txt = await response.text()
-            print(txt)
-            return response
+def upload_file(url, file_content,activtiy_id):
+    activityFileName=str(activtiy_id)+'.fit'
+    file_like_object = io.BytesIO(file_content)
+    buffered_reader = io.BufferedReader(file_like_object)
+
+    files = {'file': (activityFileName, buffered_reader, 'application/octet-stream')}
+    headers = {'token': runalyzeToken}
+    response = requests.post(RUNALYZE_UPLOAD_LINK, headers=headers, files=files)
+    return response
     
 @app.route('/transferfile/<int:activtiy_id>', methods=['GET'])
 async def transfer_file(activtiy_id):
     download_url = get_linkById(activtiy_id)
 
     file_content = await fetch_file(download_url)
-    upload_response = await upload_file(RUNALYZE_UPLOAD_LINK, file_content,activtiy_id)
+    upload_response = upload_file(RUNALYZE_UPLOAD_LINK, file_content,activtiy_id)
 
-    txt1 = str(await upload_response.text())
-    txt = jsonify({"message": "File transferred successfully: " + txt1})
-    txt2 = await upload_response.text()
+    txt = jsonify({"message": "File transferred successfully: " + str( upload_response.text )})
     print(txt1)
-    print(txt2)
-    return txt, upload_response.status
-
-    async with aiohttp.ClientSession() as session:
-        cookies = {}
-        headers = {}
-        async with session.get(download_url, cookies=cookies, headers=headers) as response:
-            try:
-                # await response.content.drain()
-                data = await read_bytes_from_stream(response.content, 1024)
-                async with session.post(RUNALYZE_UPLOAD_LINK, data={'file': (str(activtiy_id)+".fit",data)}, headers={"token": runalyzeToken}) as responsePost:
-                    return jsonify({"message": "File transferred successfully: " + str(responsePost.text)}), responsePost.status
-            except:
-                type, value, traceback = sys.exc_info()
-                return jsonify({"error": "Failed to upload file: " + str(value)}), responsePost.status
+    return txt, upload_response.status_code
 
 
 if __name__ == '__main__':
