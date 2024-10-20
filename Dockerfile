@@ -7,7 +7,8 @@ RUN git clone --branch RestService https://github.com/gsnhf/zwiftrunalyze.git
 RUN apt-get update && apt-get install -y cmake
 RUN pip install --upgrade pip setuptools wheel
 
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 WORKDIR /zwiftrunalyze
+EXPOSE 5000
 COPY . .
 CMD ["python", "rest.py"]
