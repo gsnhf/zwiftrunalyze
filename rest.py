@@ -104,7 +104,7 @@ async def transfer_file(activtiy_id):
     upload_response = upload_file(RUNALYZE_UPLOAD_LINK, file_content,activtiy_id)
 
     txt = jsonify({"message": "File transferred successfully: " + str( upload_response.text )})
-    print(txt1)
+    print(txt)
     return txt, upload_response.status_code
 
 
