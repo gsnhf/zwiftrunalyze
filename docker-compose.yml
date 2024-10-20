@@ -4,7 +4,9 @@ services:
      context: .
      dockerfile: Dockerfile
      network: host
-    network_mode: host
+    #network_mode: host 
+    ports:
+      - 5001:5000
     volumes:
       - ./data/:/zwiftrunalyze/data
       - ./zrconfig.py:/zwiftrunalyze/zrconfig.py
