@@ -57,21 +57,6 @@ def get_link_by_id(activity_id):
     return link
 
 
-data = {
-    1: {"name": "Item 1", "description": "This is item 1"},
-    2: {"name": "Item 2", "description": "This is item 2"},
-}
-
-
-@app.route('/items/<int:item_id>', methods=['GET'])
-def get_item(item_id):
-    item = data.get(item_id)
-    if item:
-        return jsonify(item)
-    else:
-        return jsonify({"error": "Item not found"}), 404
-
-
 async def read_bytes_from_stream(stream_reader, num_bytes):
     data = await stream_reader.read(num_bytes)
     return data
