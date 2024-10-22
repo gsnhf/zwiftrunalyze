@@ -11,4 +11,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 WORKDIR /zwiftrunalyze
 EXPOSE 5000
 COPY . .
-CMD ["python", "zwift2runalyze.py"]
+CMD ["python", "rest.py"]
