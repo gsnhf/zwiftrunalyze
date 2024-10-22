@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, render_template
-from zwift2runalyze import Client
+from zwift import Client
 from zrconfig import zwiftuser, zwiftpwd, runalyzeToken
 from flask_cors import CORS
 import io
