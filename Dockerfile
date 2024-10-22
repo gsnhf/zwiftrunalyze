@@ -9,6 +9,6 @@ RUN pip install --upgrade pip setuptools wheel
 
 RUN pip install --no-cache-dir -r requirements.txt
 WORKDIR /zwiftrunalyze
-EXPOSE 5000
+EXPOSE 5005
 COPY . .
 CMD ["python", "rest.py"]
