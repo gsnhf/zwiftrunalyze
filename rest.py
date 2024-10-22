@@ -20,7 +20,7 @@ def get_activities_internal():
     return client.get_activity(zwiftProfile.profile["id"]).list()
 
 
-def get_activityById_internal(activtiy_id):
+def get_activity_by_id_internal(activtiy_id):
     activity = None
     activities = get_activities_internal()
     for item in activities:
@@ -81,7 +81,7 @@ def upload_file(url, file_content, activity_id):
 
 @app.route('/transferfile/<int:activtiy_id>', methods=['GET'])
 async def transfer_file(activtiy_id):
-    download_url = get_linkById(activtiy_id)
+    download_url = get_link_by_id(activtiy_id)
 
     file_content = await fetch_file(download_url)
     upload_response = upload_file(RUNALYZE_UPLOAD_LINK, file_content,activtiy_id)
