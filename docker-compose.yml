@@ -9,4 +9,5 @@ services:
     volumes:
       - ./data/:/zwiftrunalyze/data
       - ./zrconfig.py:/zwiftrunalyze/zrconfig.py
+      - ./logs/:/zwiftrunalyze/logs
 
