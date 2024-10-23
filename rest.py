@@ -1,14 +1,11 @@
 from flask import Flask, jsonify, render_template
-import aiohttp
 from zwift import Client
 from zrconfig import zwiftuser, zwiftpwd, runalyzeToken
 from flask_cors import CORS
-import io
 
 from constants import RUNALYZE_UPLOAD_LINK
 
-import requests
-from methods import log, logError, uploadToRunalyze, convertDateTimeToUtcDate
+from methods import log, fetch_file, upload_file
 
 app = Flask(__name__)
 CORS(app)
@@ -70,42 +67,13 @@ def get_link_by_id(activity_id):
     return link
 
 
-async def read_bytes_from_stream(stream_reader, num_bytes):
-    log("read_bytes_from_stream started")
-    data = await stream_reader.read(num_bytes)
-    log("read_bytes_from_stream completed")
-    return data
-
-
-async def fetch_file(url):
-    log(f"fetch_file started for url: {url}")
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            data = await response.content.read()
-            log(f"fetch_file completed for url: {url}")
-            return data
-
-
-def upload_file(url, file_content, activity_id):
-    log(f"upload_file started for activity_id: {activity_id}")
-    activity_file_name = f"{activity_id}.fit"
-    file_like_object = io.BytesIO(file_content)
-    buffered_reader = io.BufferedReader(file_like_object)
-
-    files = {'file': (activity_file_name, buffered_reader, 'application/octet-stream')}
-    headers = {'token': runalyzeToken}
-    response = requests.post(RUNALYZE_UPLOAD_LINK, headers=headers, files=files)
-    log(f"upload_file completed for activity_id: {activity_id} with status code: {response.status_code}")
-    return response
-
-
 @app.route('/transferfile/<int:activity_id>', methods=['GET'])
 async def transfer_file(activity_id):
     log(f"transfer_file route started for activity_id: {activity_id}")
     download_url = get_link_by_id(activity_id)
 
     file_content = await fetch_file(download_url)
-    upload_response = upload_file(RUNALYZE_UPLOAD_LINK, file_content, activity_id)
+    upload_response = upload_file(RUNALYZE_UPLOAD_LINK, file_content, activity_id, runalyzeToken)
 
     txt = jsonify({"message": "File transferred successfully: " + str(upload_response.text)})
     log(f"transfer_file route completed for activity_id: {activity_id} with status code: {upload_response.status_code}")

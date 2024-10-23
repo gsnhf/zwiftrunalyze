@@ -5,6 +5,8 @@ import logging
 import os
 import sys
 import pandas as pd
+import io
+import requests
 
 from enum import Enum
 from constants import RUNALYZE_UPLOAD_LINK
@@ -97,3 +99,32 @@ def convertDateTimeToUtcDate(datetime, local_timezone='Europe/Berlin'):
     except Exception as e:
         logError(f"Error in convertDateTimeToUtcDate: {e}")
         return datetime
+
+
+async def read_bytes_from_stream(stream_reader, num_bytes):
+    log("read_bytes_from_stream started")
+    data = await stream_reader.read(num_bytes)
+    log("read_bytes_from_stream completed")
+    return data
+
+
+async def fetch_file(url):
+    log(f"fetch_file started for url: {url}")
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            data = await response.content.read()
+            log(f"fetch_file completed for url: {url}")
+            return data
+
+
+def upload_file(url, file_content, activity_id, runalyzeToken):
+    log(f"upload_file started for activity_id: {activity_id}")
+    activity_file_name = f"{activity_id}.fit"
+    file_like_object = io.BytesIO(file_content)
+    buffered_reader = io.BufferedReader(file_like_object)
+
+    files = {'file': (activity_file_name, buffered_reader, 'application/octet-stream')}
+    headers = {'token': runalyzeToken}
+    response = requests.post(url, headers=headers, files=files)
+    log(f"upload_file completed for activity_id: {activity_id} with status code: {response.status_code}")
+    return response
