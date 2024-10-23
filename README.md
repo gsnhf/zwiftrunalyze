@@ -130,7 +130,7 @@ def get_items():
     return jsonify({"items": ["item1", "item2", "item3"]})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5005)
 ```
 
 ### Schritt 3: Erstelle die Anforderungen
@@ -152,7 +152,7 @@ services:
   web:
     build: .
     ports:
-      - "5000:5000"
+      - "5005:5005"
 ```
 
 ### Schritt 5: Erstelle das Dockerfile
@@ -194,7 +194,7 @@ docker-compose up --build
 Sobald der Container läuft, kannst du den REST-Service testen, indem du im Browser oder mit einem Tool wie `curl` oder Postman auf die URL zugreifst:
 
 ```bash
-curl http://localhost:5000/items
+curl http://localhost:5005/items
 ```
 
 ### Schritt 8: Stoppe die Anwendung
