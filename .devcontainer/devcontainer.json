@@ -14,7 +14,16 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "pip install --upgrade pip && pip3 install -r requirements.txt && pip install protobuf==3.20.*"
+	"postCreateCommand": "pip install --upgrade pip && pip3 install -r requirements.txt && pip install protobuf==3.20.*",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"TabNine.tabnine-vscode",
+				"ms-azuretools.vscode-docker"
+			]
+		}
+	}
 
 	// Configure tool-specific properties.
 	// "customizations": {},
