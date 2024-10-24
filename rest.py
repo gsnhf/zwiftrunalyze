@@ -1,14 +1,12 @@
 from flask import Flask, jsonify, render_template
 from zwift import Client
 from zrconfig import zwiftuser, zwiftpwd, runalyzeToken
-from flask_cors import CORS
 
 from constants import RUNALYZE_UPLOAD_LINK
 
 from methods import log, fetch_file, upload_file
 
 app = Flask(__name__)
-CORS(app)
 
 client = Client(zwiftuser, zwiftpwd)
 zwiftProfile = client.get_profile()
@@ -78,6 +76,14 @@ async def transfer_file(activity_id):
     txt = jsonify({"message": "File transferred successfully: " + str(upload_response.text)})
     log(f"transfer_file route completed for activity_id: {activity_id} with status code: {upload_response.status_code}")
     return txt, upload_response.status_code
+
+
+@app.after_request
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5005'
+    response.headers['Access-Control-Allow-Methods'] = 'GET'#'GET, POST'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    return response
 
 
 if __name__ == '__main__':
