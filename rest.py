@@ -104,7 +104,7 @@ def log_error():
 
 @app.after_request
 def add_cors_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5005'
+    response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:5005'
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
     return response
