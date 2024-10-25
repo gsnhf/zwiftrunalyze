@@ -83,27 +83,6 @@
             }
         });
 
-        function uploadItem(item) {
-            //alert("Item: " + item);
-            fetch('http://127.0.0.1:5005/transferfile/'+item)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('result').innerText = JSON.stringify(data);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    logError(error);
-                });
-        }
-
-        function getData() {
-            const username = document.getElementById('username');
-            const password = document.getElementById('password');
-            const runalyzeToken = document.getElementById('runalyzeToken');
-            alert("GetData" + "\nUser: " + username.value+"\nPassword: "+password.value+"\nRunalyzeToken: "+runalyzeToken.value);
-            // Hier kannst du weitere Logik hinzufügen, um das Item zu verarbeiten
-        }
-
         function logMessage(message) {
             fetch('http://127.0.0.1:5005/log', {
                 method: 'POST',
@@ -131,6 +110,32 @@
             .then(response => response.json())
             .then(data => console.log(data))
             .catch(error => console.error('Error:', error));
+        }
+
+        function uploadItem(item) {
+            //alert("Item: " + item);
+            logMessage('uploadItem started');
+            fetch('http://127.0.0.1:5005/transferfile/'+item)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').innerText = JSON.stringify(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    logError(error);
+                });
+                
+            logMessage('uploadItem completed');
+        }
+
+        function getData() {
+            logMessage('getData started');
+            const username = document.getElementById('username');
+            const password = document.getElementById('password');
+            const runalyzeToken = document.getElementById('runalyzeToken');
+            alert("GetData" + "\nUser: " + username.value+"\nPassword: "+password.value+"\nRunalyzeToken: "+runalyzeToken.value);
+            logMessage('getData completed');
+            // Hier kannst du weitere Logik hinzufügen, um das Item zu verarbeiten
         }
     </script>
 </body>

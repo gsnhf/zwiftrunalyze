@@ -1,10 +1,11 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 from zwift import Client
 from zrconfig import zwiftuser, zwiftpwd, runalyzeToken
 
 from constants import RUNALYZE_UPLOAD_LINK
 
 from methods import log, fetch_file, logError, upload_file
+import requests
 
 app = Flask(__name__)
 
@@ -96,8 +97,8 @@ def log_error():
     if message:
         logError(message)
         return jsonify({"status": "success", "message": "Log entry created"}), 200
-    else:
-        return jsonify({"status": "error", "message": "No log message provided"}), 400
+    #else:
+        #return jsonify({"status": "error", "message": "No log message provided"}), 400
 
 
 
@@ -110,4 +111,4 @@ def add_cors_headers(response):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5005)
+    app.run(host='0.0.0.0', port=5005, debug=True)
