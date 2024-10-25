@@ -137,6 +137,22 @@
             logMessage('getData completed');
             // Hier kannst du weitere Logik hinzufügen, um das Item zu verarbeiten
         }
+
+        function testServerConnection() {
+            fetch('http://127.0.0.1:5005/ping')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Server response:', data);
+                    alert('Server is running!');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to connect to server. Check console for details.');
+                });
+        }
+        
+        // Call this function when the page loads
+        document.addEventListener('DOMContentLoaded', testServerConnection);
     </script>
 </body>
 </html>
