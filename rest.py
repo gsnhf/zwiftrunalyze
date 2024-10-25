@@ -4,7 +4,7 @@ from zrconfig import zwiftuser, zwiftpwd, runalyzeToken
 
 from constants import RUNALYZE_UPLOAD_LINK
 
-from methods import log, fetch_file, upload_file
+from methods import log, fetch_file, logError, upload_file
 
 app = Flask(__name__)
 
@@ -78,10 +78,33 @@ async def transfer_file(activity_id):
     return txt, upload_response.status_code
 
 
+@app.route('/log', methods=['POST'])
+def log_message():
+    data = request.get_json()
+    message = data.get('message')
+    if message:
+        log(message)
+        return jsonify({"status": "success", "message": "Log entry created"}), 200
+    else:
+        return jsonify({"status": "error", "message": "No log message provided"}), 400
+
+
+@app.route('/logError', methods=['POST'])
+def log_error():
+    data = request.get_json()
+    message = data.get('message')
+    if message:
+        logError(message)
+        return jsonify({"status": "success", "message": "Log entry created"}), 200
+    else:
+        return jsonify({"status": "error", "message": "No log message provided"}), 400
+
+
+
 @app.after_request
 def add_cors_headers(response):
     response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5005'
-    response.headers['Access-Control-Allow-Methods'] = 'GET'#'GET, POST'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
     return response
 

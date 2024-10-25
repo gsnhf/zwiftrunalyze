@@ -90,7 +90,10 @@
                 .then(data => {
                     document.getElementById('result').innerText = JSON.stringify(data);
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => {
+                    console.error('Error:', error);
+                    logError(error);
+                });
         }
 
         function getData() {
@@ -99,6 +102,35 @@
             const runalyzeToken = document.getElementById('runalyzeToken');
             alert("GetData" + "\nUser: " + username.value+"\nPassword: "+password.value+"\nRunalyzeToken: "+runalyzeToken.value);
             // Hier kannst du weitere Logik hinzufügen, um das Item zu verarbeiten
+        }
+
+        function logMessage(message) {
+            fetch('http://127.0.0.1:5005/log', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => {
+                console.error('Error:', error);
+                logError(error);
+            });
+        }
+
+        function logError(message) {
+            fetch('http://127.0.0.1:5005/logError', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
         }
     </script>
 </body>
