@@ -62,6 +62,8 @@
     <script>
         const toggleButton = document.getElementById('darkModeToggle');
         const list = document.getElementById('myList');
+        const serverUrl = window.location.origin;
+
         toggleButton.addEventListener('click', () => {
             document.body.classList.toggle('bg-dark');
             document.body.classList.toggle('text-light');
@@ -84,7 +86,7 @@
         });
 
         function logMessage(message) {
-            fetch('http://127.0.0.1:5005/log', {
+            fetch(`${serverUrl}/log`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -100,7 +102,7 @@
         }
 
         function logError(message) {
-            fetch('http://127.0.0.1:5005/logError', {
+            fetch(`${serverUrl}/logError`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -115,7 +117,7 @@
         function uploadItem(item) {
             //alert("Item: " + item);
             logMessage('uploadItem started');
-            fetch('http://127.0.0.1:5005/transferfile/'+item)
+            fetch(`${serverUrl}/transferfile/${item}`)
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('result').innerText = JSON.stringify(data);
@@ -139,7 +141,7 @@
         }
 
         function testServerConnection() {
-            fetch('http://127.0.0.1:5005/ping')
+            fetch(`${serverUrl}/ping`)
                 .then(response => response.json())
                 .then(data => {
                     console.log('Server response:', data);
