@@ -33,6 +33,23 @@
                 </div>
                 <button type="submit" class="btn btn-primary" onclick="getData()">Get Zwift Data</button>
             </form>
+
+            <form>
+                <h2>Route information</h2>
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="title">
+                    <label class="form-check-label" for="title">Title</label>
+                </div>
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="note">
+                    <label class="form-check-label" for="note">Note</label>
+                </div>
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="route">
+                    <label class="form-check-label" for="route">Route</label>
+                </div>
+                <button type="submit" class="btn btn-primary" onclick="submitRouteInfo()">Submit Route Info</button>
+            </form>
         </div>
         <div class="container mt-5">
             <ul id="myList" class="list-group">
@@ -63,6 +80,9 @@
         const toggleButton = document.getElementById('darkModeToggle');
         const list = document.getElementById('myList');
         const serverUrl = window.location.origin;
+        let sendTitle=false;
+        let sendNote=false;
+        let sendRoute=false;
 
         toggleButton.addEventListener('click', () => {
             document.body.classList.toggle('bg-dark');
@@ -115,9 +135,11 @@
         }
 
         function uploadItem(item) {
-            //alert("Item: " + item);
+            const titleChecked = document.getElementById('title').checked;
+            const noteChecked = document.getElementById('note').checked;
+            const routeChecked = document.getElementById('route').checked;
             logMessage('uploadItem started');
-            fetch(`${serverUrl}/transferfile/${item}`)
+            fetch(`${serverUrl}/transferfile/${item}?titleChecked=${titleChecked}?noteChecked=${noteChecked}?routeChecked=${routeChecked}`)
                 .then(response => response.json())
                 .then(data => {
                     const resultElement = document.getElementById('result');
@@ -160,6 +182,20 @@
         
         // Call this function when the page loads
         document.addEventListener('DOMContentLoaded', testServerConnection);
+
+        function submitRouteInfo() {
+            const title = document.getElementById('title').checked;
+            const note = document.getElementById('note').checked;
+            const route = document.getElementById('route').checked;
+            logMessage('Route information submitted');
+            alert("Route information submitted\nAdd title name: " + addTitleName);
+            // Add your logic here to handle the form submission
+            // You can use the 'addTitleName' variable to check if the checkbox is checked
+            sendTitle = title;
+            sendNote=note;
+            sendRoute=route;
+            event.preventDefault(); // Prevent the form from actually submitting
+        }
     </script>
 </body>
 </html>
