@@ -68,14 +68,44 @@ def get_link_by_id(activity_id):
 @app.route('/transferfile/<int:activity_id>', methods=['GET'])
 async def transfer_file(activity_id):
     log(f"transfer_file route started for activity_id: {activity_id}")
+
+    # Get query parameters
+    titleChecked = request.args.get('titleChecked', 'false').lower() == 'true'
+    noteChecked = request.args.get('noteChecked', 'false').lower() == 'true'
+    routeChecked = request.args.get('routeChecked', 'false').lower() == 'true'
     download_url = get_link_by_id(activity_id)
+    activity = get_activity_by_id_internal(activity_id)
 
     file_content = await fetch_file(download_url)
-    upload_response = upload_file(RUNALYZE_UPLOAD_LINK, file_content, activity_id, runalyzeToken)
 
-    txt = jsonify({"message": "File transferred successfully: " + str(upload_response.text)})
+    # Prepare upload parameters
+    upload_params = {
+        'url': RUNALYZE_UPLOAD_LINK,
+        'file_content': file_content,
+        'activity_id': activity_id,
+        'token': runalyzeToken
+    }
+
+    # Add title name if requested
+    if titleChecked and activity and 'name' in activity:
+        upload_params['title'] = activity['name']
+    if noteChecked and activity and 'name' in activity:
+        upload_params['note'] = activity['note']
+    if routeChecked and activity and 'name' in activity:
+        upload_params['route'] = activity['route']
+
+    upload_response = upload_file(**upload_params)
+
+    txt = jsonify({
+        "message": "File transferred successfully",
+        "response": str(upload_response.text),
+        "titleChecked": titleChecked,
+        "noteChecked": noteChecked,
+        "routeChecked": routeChecked
+    })
     log(f"transfer_file route completed for activity_id: {activity_id} with status code: {upload_response.status_code}")
     return txt, upload_response.status_code
+
 
 
 @app.route('/log', methods=['POST'])
