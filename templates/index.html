@@ -80,9 +80,9 @@
         const toggleButton = document.getElementById('darkModeToggle');
         const list = document.getElementById('myList');
         const serverUrl = window.location.origin;
-        let sendTitle=false;
-        let sendNote=false;
-        let sendRoute=false;
+        let sendTitle=true;
+        let sendNote=true;
+        let sendRoute=true;
 
         toggleButton.addEventListener('click', () => {
             document.body.classList.toggle('bg-dark');
@@ -135,11 +135,11 @@
         }
 
         function uploadItem(item) {
-            const titleChecked = document.getElementById('title').checked;
-            const noteChecked = document.getElementById('note').checked;
-            const routeChecked = document.getElementById('route').checked;
+           sendTitle = document.getElementById('title').checked;
+            sendNote = document.getElementById('note').checked;
+            sendRoute = document.getElementById('route').checked;
             logMessage('uploadItem started');
-            fetch(`${serverUrl}/transferfile/${item}?titleChecked=${titleChecked}?noteChecked=${noteChecked}?routeChecked=${routeChecked}`)
+            fetch(`${serverUrl}/transferfile/${item}?titleChecked=${sendTitle}?noteChecked=${sendNote}?routeChecked=${sendRoute}`)
                 .then(response => response.json())
                 .then(data => {
                     const resultElement = document.getElementById('result');
