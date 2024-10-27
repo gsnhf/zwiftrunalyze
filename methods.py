@@ -130,11 +130,15 @@ def upload_file(url, file_content, activity_id, runalyzeToken):
     log(f"upload_file completed for activity_id: {activity_id} with status code: {response.status_code}")
     return response
 
-def upload_file(url, file_content, activity_id, token, title=None):
+def upload_file(url, file_content, activity_id, token, title=None, note=None, route=None):
     files = {'file': ('activity.fit', file_content, 'application/octet-stream')}
     data = {'token': token}
     if title:
         data['title'] = title
+    if note:
+        data['note'] = note
+    if route:
+        data['route'] = route
     
     response = requests.post(url, files=files, data=data)
     return response
