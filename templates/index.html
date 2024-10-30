@@ -139,7 +139,7 @@
             sendNote = document.getElementById('note').checked;
             sendRoute = document.getElementById('route').checked;
             logMessage('uploadItem started');
-            let uploadUrl=`${serverUrl}/transferfile/${item}?titleChecked=${sendTitle}?noteChecked=${sendNote}?routeChecked=${sendRoute}`;
+            let uploadUrl=`${serverUrl}/transferfile/${item}?titleChecked=${sendTitle}&noteChecked=${sendNote}&routeChecked=${sendRoute}`;
             fetch(uploadUrl)
                 .then(response => response.json())
                 .then(data => {
@@ -173,7 +173,7 @@
                 .then(response => response.json())
                 .then(data => {
                     console.log('Server response:', data);
-                    alert('Server is running!');
+                    // alert('Server is running!');
                 })
                 .catch(error => {
                     console.error('Error:', error);

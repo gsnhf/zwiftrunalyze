@@ -69,8 +69,6 @@ def get_link_by_id(activity_id):
 async def transfer_file(activity_id):
     log(f"transfer_file route started for activity_id: {activity_id}")
 
-    # Get query parameters
-    abc = request.args.get('titleChecked')
     titleChecked = request.args.get('titleChecked', 'false').lower() == 'true'
     noteChecked = request.args.get('noteChecked', 'false').lower() == 'true'
     routeChecked = request.args.get('routeChecked', 'false').lower() == 'true'
