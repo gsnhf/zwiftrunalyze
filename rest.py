@@ -88,10 +88,10 @@ async def transfer_file(activity_id):
     # Add title name if requested
     if titleChecked and activity and 'name' in activity:
         upload_params['title'] = activity['name']
-    if noteChecked and activity and 'name' in activity:
+    if noteChecked and activity and 'description' in activity:
         upload_params['note'] = activity['note']
-    if routeChecked and activity and 'name' in activity:
-        upload_params['route'] = activity['route']
+    #if routeChecked and activity and 'name' in activity:
+        #upload_params['route'] = activity['route']
 
     upload_response = upload_file(**upload_params)
 
