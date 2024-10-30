@@ -139,7 +139,8 @@
             sendNote = document.getElementById('note').checked;
             sendRoute = document.getElementById('route').checked;
             logMessage('uploadItem started');
-            fetch(`${serverUrl}/transferfile/${item}?titleChecked=${sendTitle}?noteChecked=${sendNote}?routeChecked=${sendRoute}`)
+            let uploadUrl=`${serverUrl}/transferfile/${item}?titleChecked=${sendTitle}?noteChecked=${sendNote}?routeChecked=${sendRoute}`;
+            fetch(uploadUrl)
                 .then(response => response.json())
                 .then(data => {
                     const resultElement = document.getElementById('result');
@@ -188,7 +189,7 @@
             const note = document.getElementById('note').checked;
             const route = document.getElementById('route').checked;
             logMessage('Route information submitted');
-            alert("Route information submitted\nAdd title name: " + addTitleName);
+            alert("Route information submitted\nAdd title name: " + title);
             // Add your logic here to handle the form submission
             // You can use the 'addTitleName' variable to check if the checkbox is checked
             sendTitle = title;
