@@ -117,8 +117,7 @@ async def fetch_file(url):
             log(f"fetch_file completed for url: {url}")
             return data
 
-
-def upload_file(url, file_content, activity_id, runalyzeToken):
+def upload_file(url, file_content, activity_id, runalyzeToken, title=None, note=None):
     log(f"upload_file started for activity_id: {activity_id}")
     activity_file_name = f"{activity_id}.fit"
     file_like_object = io.BytesIO(file_content)
@@ -126,17 +125,11 @@ def upload_file(url, file_content, activity_id, runalyzeToken):
 
     files = {'file': (activity_file_name, buffered_reader, 'application/octet-stream')}
     headers = {'token': runalyzeToken}
-    response = requests.post(url, headers=headers, files=files)
-    log(f"upload_file completed for activity_id: {activity_id} with status code: {response.status_code}")
-    return response
-
-def upload_file(url, file_content, activity_id, token, title=None, note=None):
-    files = {'file': ('activity.fit', file_content, 'application/octet-stream')}
-    data = {'token': token}
+    data = {}
     if title:
         data['title'] = title
     if note:
         data['note'] = note
-    
-    response = requests.post(url, files=files, data=data)
+    response = requests.post(url, headers=headers, files=files, data=data)
+    log(f"upload_file completed for activity_id: {activity_id} with status code: {response.status_code}")
     return response
