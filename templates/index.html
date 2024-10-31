@@ -41,12 +41,8 @@
                     <label class="form-check-label" for="title">Title</label>
                 </div>
                 <div class="form-check mb-3">
-                    <input type="checkbox" class="form-check-input" id="note" checked>
+                    <input type="checkbox" class="form-check-input" id="note">
                     <label class="form-check-label" for="note">Note</label>
-                </div>
-                <div class="form-check mb-3">
-                    <input type="checkbox" class="form-check-input" id="route" checked>
-                    <label class="form-check-label" for="route">Route</label>
                 </div>
                 <button type="submit" class="btn btn-primary" onclick="submitRouteInfo()">Submit Route Info</button>
             </form>
@@ -82,7 +78,6 @@
         const serverUrl = window.location.origin;
         let sendTitle=true;
         let sendNote=true;
-        let sendRoute=true;
 
         toggleButton.addEventListener('click', () => {
             document.body.classList.toggle('bg-dark');
@@ -181,21 +176,16 @@
                 });
         }
         
-        // Call this function when the page loads
         document.addEventListener('DOMContentLoaded', testServerConnection);
 
         function submitRouteInfo() {
             const title = document.getElementById('title').checked;
             const note = document.getElementById('note').checked;
-            const route = document.getElementById('route').checked;
             logMessage('Route information submitted');
             alert("Route information submitted\nAdd title name: " + title);
-            // Add your logic here to handle the form submission
-            // You can use the 'addTitleName' variable to check if the checkbox is checked
             sendTitle = title;
-            sendNote=note;
-            sendRoute=route;
-            event.preventDefault(); // Prevent the form from actually submitting
+            sendNote = note;
+            event.preventDefault();
         }
     </script>
 </body>
