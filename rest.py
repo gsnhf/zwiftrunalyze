@@ -80,7 +80,7 @@ async def transfer_file(activity_id):
         'url': RUNALYZE_UPLOAD_LINK,
         'file_content': file_content,
         'activity_id': activity_id,
-        'token': runalyzeToken
+        'runalyzeToken': runalyzeToken
     }
 
     if titleChecked and activity and 'name' in activity:

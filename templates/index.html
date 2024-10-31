@@ -135,9 +135,8 @@
         function uploadItem(item) {
            sendTitle = document.getElementById('title').checked;
             sendNote = document.getElementById('note').checked;
-            sendRoute = document.getElementById('route').checked;
             logMessage('uploadItem started');
-            let uploadUrl=`${serverUrl}/transferfile/${item}?titleChecked=${sendTitle}&noteChecked=${sendNote}&routeChecked=${sendRoute}`;
+            let uploadUrl=`${serverUrl}/transferfile/${item}?titleChecked=${sendTitle}&noteChecked=${sendNote}`;
             fetch(uploadUrl)
                 .then(response => response.json())
                 .then(data => {
