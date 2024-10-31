@@ -7,7 +7,6 @@ services:
     network_mode: host
     restart: unless-stopped
     volumes:
-      - ./data/:/zwiftrunalyze/data
       - ./zrconfig.py:/zwiftrunalyze/zrconfig.py
       - ./logs/:/zwiftrunalyze/logs
 
