@@ -85,6 +85,11 @@ async def transfer_file(activity_id):
 
     if titleChecked and activity and 'name' in activity:
         upload_params['title'] = activity['name']
+        full_name = activity['name']
+        route_parts = full_name.split('-')
+        if len(route_parts) > 1 and 'in' in route_parts[1]:
+            route = route_parts[1].split('in')[0].strip()
+            upload_params['route'] = route
     if noteChecked and activity and 'description' in activity:
         upload_params['note'] = activity['note']
 
