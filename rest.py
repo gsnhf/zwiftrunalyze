@@ -89,6 +89,10 @@ async def transfer_file(activity_id):
         route_parts = full_name.split('-')
         if len(route_parts) > 1 and 'in' in route_parts[1]:
             route = route_parts[1].split('in')[0].strip()
+            if 'Climb Portal:' in route_parts[1]:
+                climbPortal = route_parts[1].split(':')[1].strip()
+                route = climbPortal.split('at')[0].strip()
+                # upload_params['title'] = route
             upload_params['route'] = route
     if noteChecked and activity and 'description' in activity:
         upload_params['note'] = activity['note']
@@ -103,8 +107,6 @@ async def transfer_file(activity_id):
     })
     log(f"transfer_file route completed for activity_id: {activity_id} with status code: {upload_response.status_code}")
     return txt, upload_response.status_code
-
-
 
 @app.route('/log', methods=['POST'])
 def log_message():

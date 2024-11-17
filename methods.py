@@ -124,7 +124,9 @@ def upload_file(url, file_content, activity_id, runalyzeToken, title=None, note=
     buffered_reader = io.BufferedReader(file_like_object)
 
     files = {'file': (activity_file_name, buffered_reader, 'application/octet-stream')}
-    headers = {'token': runalyzeToken}
+    # headers={'token': runalyzeToken, 'Accept': '*/*', 'Content-Type':'multipart/form-data'}
+    headers={'token': runalyzeToken, 'Content-Type':'multipart/form-data'}
+
     data = {}
     if title:
         data['title'] = title
