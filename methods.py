@@ -125,7 +125,8 @@ def upload_file(url, file_content, activity_id, runalyzeToken, title=None, note=
 
     files = {'file': (activity_file_name, buffered_reader, 'application/octet-stream')}
     # headers={'token': runalyzeToken, 'Accept': '*/*', 'Content-Type':'multipart/form-data'}
-    headers={'token': runalyzeToken, 'Content-Type':'multipart/form-data'}
+    # headers={'token': runalyzeToken, 'Content-Type':'multipart/form-data'}
+    headers={'token': runalyzeToken}
 
     data = {}
     if title:
@@ -134,6 +135,13 @@ def upload_file(url, file_content, activity_id, runalyzeToken, title=None, note=
         data['note'] = note
     if route:
         data['route'] = route
-    response = requests.post(url, headers=headers, files=files, data=data)
-    log(f"upload_file completed for activity_id: {activity_id} with status code: {response.status_code}")
+
+    try:
+        response = requests.post(url, headers=headers, files=files, data=data)
+        response.raise_for_status()  # Raise an HTTPError for bad responses (4xx and 5xx)
+        log(f"upload_file completed for activity_id: {activity_id} with status code: {response.status_code}")
+    except requests.exceptions.RequestException as e:
+        logError(f"Error in upload_file for activity_id: {activity_id}: {e}")
+        response = None
+
     return response

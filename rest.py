@@ -92,21 +92,19 @@ async def transfer_file(activity_id):
             if 'Climb Portal:' in route_parts[1]:
                 climbPortal = route_parts[1].split(':')[1].strip()
                 route = climbPortal.split('at')[0].strip()
-                # upload_params['title'] = route
             upload_params['route'] = route
     if noteChecked and activity and 'description' in activity:
         upload_params['note'] = activity['note']
 
     upload_response = upload_file(**upload_params)
 
-    txt = jsonify({
-        "message": "File transferred successfully",
-        "response": str(upload_response.text),
-        "titleChecked": titleChecked,
-        "noteChecked": noteChecked
-    })
-    log(f"transfer_file route completed for activity_id: {activity_id} with status code: {upload_response.status_code}")
-    return txt, upload_response.status_code
+    if upload_response and upload_response.status_code == 200:
+        txt = jsonify({"message": "File transferred successfully" ,"response":  str(upload_response.text), "titleChecked": titleChecked, "noteChecked": noteChecked})
+        log(f"transfer_file route completed for activity_id: {activity_id} with status code: {upload_response.status_code}")
+        return txt, upload_response.status_code
+    else:
+        logError(f"transfer_file route failed for activity_id: {activity_id}")
+        return jsonify({"message": "File transfer failed"}), 500
 
 @app.route('/log', methods=['POST'])
 def log_message():
