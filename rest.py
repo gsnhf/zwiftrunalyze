@@ -98,7 +98,7 @@ async def transfer_file(activity_id):
 
     upload_response = upload_file(**upload_params)
 
-    if upload_response and upload_response.status_code == 200:
+    if upload_response and upload_response.status_code < 300:
         txt = jsonify({"message": "File transferred successfully" ,"response":  str(upload_response.text), "titleChecked": titleChecked, "noteChecked": noteChecked})
         log(f"transfer_file route completed for activity_id: {activity_id} with status code: {upload_response.status_code}")
         return txt, upload_response.status_code
