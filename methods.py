@@ -124,12 +124,28 @@ def upload_file(url, file_content, activity_id, runalyzeToken, title=None, note=
     buffered_reader = io.BufferedReader(file_like_object)
 
     files = {'file': (activity_file_name, buffered_reader, 'application/octet-stream')}
-    headers = {'token': runalyzeToken}
+    headers={'token': runalyzeToken, 'accept': '*/*'}
+
     data = {}
     if title:
         data['title'] = title
     if note:
         data['note'] = note
-    response = requests.post(url, headers=headers, files=files, data=data)
-    log(f"upload_file completed for activity_id: {activity_id} with status code: {response.status_code}")
+    if route:
+        data['route'] = route
+
+    try:
+        response = requests.post(url, headers=headers, files=files, data=data)
+        response.raise_for_status()  # Raise an HTTPError for bad responses (4xx and 5xx)
+        log(f"upload_file completed for activity_id: {activity_id} with status code: {response.status_code}")
+
+        if 'application/json' in response.headers.get('Content-Type', ''):
+            json_response = response.json()
+            log(f"Received JSON response: {json_response}")
+        else:
+            log(f"Response content: {response.text}")
+    except requests.exceptions.RequestException as e:
+        logError(f"Error in upload_file for activity_id: {activity_id}: {e}")
+        response = None
+
     return response
