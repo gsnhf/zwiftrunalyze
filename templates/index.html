@@ -70,6 +70,17 @@
                                 </button>
                             </small>
                         </div>
+                        <form>
+                            <h2>Prefs</h2>
+                            <div class="form-group">
+                                <label for="route">{{item["endDate"]}}</label>
+                                <input type="text" class="form-control" id="route" required>
+                            </div>
+                            <!-- <div class="form-group">
+                                <label for="title">Zwift Benutzername</label>
+                                <input type="text" class="form-control" id="title" required>
+                            </div> -->
+                        </form>
                         <small class="text-secondary text-dark-emphasis"><i class="bi bi-calendar3"></i> {{item["endDate"]}}</small>
                         <br/>
                         <small class="text-secondary text-dark-emphasis"><i class="bi bi-rulers"></i> {{ item["distanceInMeters"]/1000 }}km</small>
