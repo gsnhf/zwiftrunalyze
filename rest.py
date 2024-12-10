@@ -4,7 +4,7 @@ from zrconfig import zwiftuser, zwiftpwd, runalyzeToken
 
 from constants import RUNALYZE_UPLOAD_LINK
 
-from methods import log, fetch_file, logError, upload_file
+from methods import log, fetch_file, logError, upload_file, get_route_name
 
 app = Flask(__name__)
 
@@ -84,15 +84,7 @@ async def transfer_file(activity_id):
     }
 
     if titleChecked and activity and 'name' in activity:
-        upload_params['title'] = activity['name']
-        full_name = activity['name']
-        route_parts = full_name.split('-')
-        if len(route_parts) > 1 and 'in' in route_parts[1]:
-            route = route_parts[1].split('in')[0].strip()
-            if 'Climb Portal:' in route_parts[1]:
-                climbPortal = route_parts[1].split(':')[1].strip()
-                route = climbPortal.split('at')[0].strip()
-            upload_params['route'] = route
+        upload_params['title'] = get_route_name(activity['name'])
     if noteChecked and activity and 'description' in activity:
         upload_params['note'] = activity['note']
 
