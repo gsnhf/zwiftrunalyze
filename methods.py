@@ -132,8 +132,8 @@ def upload_file(url, file_content, activity_id, runalyzeToken, title=None, note=
 
 def get_route_name(activityName):
     route_parts = activityName.split('-')
-    if len(route_parts) > 1 and 'in' in route_parts[1]:
-        route = route_parts[1].split('in')[0].strip()
+    if len(route_parts) > 1 and 'in ' in route_parts[1]:
+        route = route_parts[1].split('in ')[0].strip()
         if 'Climb Portal:' in route_parts[1]:
             climbPortal = route_parts[1].split(':')[1].strip()
             route = climbPortal.split('at')[0].strip()
