@@ -51,13 +51,6 @@ Then start zwift import with
 
 ``` sh
 docker exec zwiftrunalyze_app_1 python3 main.py
-```
-
-or MyWhoosh import with 
-
-``` sh
-docker exec zwiftrunalyze_app_1 python3 mywhoosh.py
-```
 
 which can be added to the host system's crontab
 
@@ -76,11 +69,6 @@ Simple:
 
 ``` sh
 python3 main.py
-``` 
-or 
-
-``` sh
-python3 mywhoosh.py
 ``` 
 Make the file executable: 
 

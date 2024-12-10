@@ -27,10 +27,6 @@ logger.setLevel(logging.INFO)
 logger.addHandler(log_handler)
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
-class Portal(Enum):
-    Zwift = 1
-    MyWhoosh = 2
-
 def log(message):
     logger.info(message)
 
@@ -64,24 +60,8 @@ async def uploadToRunalyze(link, portal, fileName, runalyzeToken, sessionKey, to
     log(f"uploadToRunalyze started for fileName: {fileName}")
     try:
         async with aiohttp.ClientSession() as session:
-            if portal == Portal.MyWhoosh:
-                cookies = {'mywhooshweb_session': sessionKey}
-                headers = {
-                    'authority': 'event.mywhoosh.com',
-                    'accept': 'application/json',
-                    'accept-language': 'de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7,it;q=0.6',
-                    'authorization': f'Bearer {token}',
-                    'referer': 'https://event.mywhoosh.com/user/profile',
-                    'sec-fetch-dest': 'empty',
-                    'sec-fetch-mode': 'cors',
-                    'sec-fetch-site': 'same-origin',
-                }
-                async with session.get(link, cookies=cookies, headers=headers) as response1:
-                    response_data = await response1.content.read()
-                    json_data = json.loads(response_data.decode("utf8"))
-                    link = json_data.get('data').get('data')
-                headers.pop('authorization')
-
+            cookies = {}
+            headers = {}
             async with session.get(link, cookies=cookies, headers=headers) as response:
                 await write_fitFile(fileName, response)
                 if runalyzeToken:
@@ -149,3 +129,13 @@ def upload_file(url, file_content, activity_id, runalyzeToken, title=None, note=
         response = None
 
     return response
+
+def get_route_name(activityName):
+    route_parts = activityName.split('-')
+    if len(route_parts) > 1 and 'in ' in route_parts[1]:
+        route = route_parts[1].split('in ')[0].strip()
+        if 'Climb Portal:' in route_parts[1]:
+            climbPortal = route_parts[1].split(':')[1].strip()
+            route = climbPortal.split('at')[0].strip()
+        return route
+    return activityName

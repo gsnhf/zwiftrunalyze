@@ -17,9 +17,12 @@
             <button id="darkModeToggle" class="btn btn-secondary">
                 <i class="bi bi-brightness-high-fill"></i>
             </button>
+
+            <!--
             <button id="darkModeToggle" class="btn btn-secondary" onclick="testSpinner()">
                 Test spinner
             </button>
+            -->
             
             <!--
             <form>
@@ -67,6 +70,17 @@
                                 </button>
                             </small>
                         </div>
+                        <form>
+                            <h2>Prefs</h2>
+                            <div class="form-group">
+                                <label for="route">Route</label>
+                                <input type="text" class="form-control" id="route" required value="{{item['route_name']}}">
+                            </div>
+                            <!-- <div class="form-group">
+                                <label for="title">Zwift Benutzername</label>
+                                <input type="text" class="form-control" id="title" required>
+                            </div> -->
+                        </form>
                         <small class="text-secondary text-dark-emphasis"><i class="bi bi-calendar3"></i> {{item["endDate"]}}</small>
                         <br/>
                         <small class="text-secondary text-dark-emphasis"><i class="bi bi-rulers"></i> {{ item["distanceInMeters"]/1000 }}km</small>
@@ -149,8 +163,9 @@
         function uploadItem(item) {
             sendTitle = document.getElementById('title').checked;
             sendNote = document.getElementById('note').checked;
+            route = document.getElementById('route').value;
             logMessage('uploadItem started');
-            let uploadUrl=`${serverUrl}/transferfile/${item}?titleChecked=${sendTitle}&noteChecked=${sendNote}`;
+            let uploadUrl=`${serverUrl}/transferfile/${item}?titleChecked=${sendTitle}&noteChecked=${sendNote}&route=${route}`;
             showSpinner();
             fetch(uploadUrl)
                 .then(response => response.json())

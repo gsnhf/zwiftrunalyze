@@ -3,5 +3,4 @@ date/
 zrconfig.py
 data/
 logs/
-mywhooshResponse.json
 test.py
