@@ -15,6 +15,9 @@ zwiftProfile = client.get_profile()
 def get_activities_internal():
     log("get_activities_internal started")
     activities = client.get_activity(zwiftProfile.profile["id"]).list()
+    for activity in activities:
+        if 'name' in activity:
+            activity['route_name'] = get_route_name(activity['name'])
     log("get_activities_internal completed")
     return activities
 
@@ -84,7 +87,7 @@ async def transfer_file(activity_id):
     }
 
     if titleChecked and activity and 'name' in activity:
-        upload_params['title'] = get_route_name(activity['name'])
+        upload_params['title'] = activity['route_name']
     if noteChecked and activity and 'description' in activity:
         upload_params['note'] = activity['note']
 
