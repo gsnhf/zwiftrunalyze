@@ -74,7 +74,7 @@ async def transfer_file(activity_id):
 
     titleChecked = request.args.get('titleChecked', 'false').lower() == 'true'
     noteChecked = request.args.get('noteChecked', 'false').lower() == 'true'
-    route = request.args.get('route')
+    route = request.args.get('route', 'false')
     download_url = get_link_by_id(activity_id)
     activity = get_activity_by_id_internal(activity_id)
 
