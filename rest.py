@@ -74,6 +74,7 @@ async def transfer_file(activity_id):
 
     titleChecked = request.args.get('titleChecked', 'false').lower() == 'true'
     noteChecked = request.args.get('noteChecked', 'false').lower() == 'true'
+    route = request.args.get('route')
     download_url = get_link_by_id(activity_id)
     activity = get_activity_by_id_internal(activity_id)
 
@@ -87,7 +88,8 @@ async def transfer_file(activity_id):
     }
 
     if titleChecked and activity and 'name' in activity:
-        upload_params['title'] = activity['route_name']
+        upload_params['title'] = activity['name']
+        upload_params['route'] = route
     if noteChecked and activity and 'description' in activity:
         upload_params['note'] = activity['note']
 
