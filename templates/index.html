@@ -42,19 +42,6 @@
                 <button type="submit" class="btn btn-primary" onclick="getData()">Get Zwift Data</button>
             </form>
             -->
-
-            <form>
-                <h2>Route information</h2>
-                <div class="form-check mb-3">
-                    <input type="checkbox" class="form-check-input" id="title" checked>
-                    <label class="form-check-label" for="title">Title</label>
-                </div>
-                <div class="form-check mb-3">
-                    <input type="checkbox" class="form-check-input" id="note">
-                    <label class="form-check-label" for="note">Note</label>
-                </div>
-                <!-- <button type="submit" class="btn btn-primary" onclick="submitRouteInfo()">Submit Route Info</button> -->
-            </form>
         </div>
         <div class="container mt-5">
             <ul id="myList" class="list-group">
@@ -76,10 +63,6 @@
                                 <label for="route">Route</label>
                                 <input type="text" class="form-control" id="route" required value="{{item['route_name']}}">
                             </div>
-                            <!-- <div class="form-group">
-                                <label for="title">Zwift Benutzername</label>
-                                <input type="text" class="form-control" id="title" required>
-                            </div> -->
                         </form>
                         <small class="text-secondary text-dark-emphasis"><i class="bi bi-calendar3"></i> {{item["endDate"]}}</small>
                         <br/>
@@ -89,7 +72,7 @@
                     </a>
                 {% endfor %}
             </ul>
-            <div id="result" class="mt-3"></div> <!-- Ensure this element exists -->
+            <div id="result" class="mt-3"></div>
             <div id="spinner-overlay">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Loading...</span>
@@ -161,11 +144,9 @@
         }
 
         function uploadItem(item) {
-            sendTitle = document.getElementById('title').checked;
-            sendNote = document.getElementById('note').checked;
             route = document.getElementById('route').value;
             logMessage('uploadItem started');
-            let uploadUrl=`${serverUrl}/transferfile/${item}?titleChecked=${sendTitle}&noteChecked=${sendNote}&route=${route}`;
+            let uploadUrl=`${serverUrl}/transferfile/${item}?route=${route}`;
             showSpinner();
             fetch(uploadUrl)
                 .then(response => response.json())

@@ -72,8 +72,6 @@ def get_link_by_id(activity_id):
 async def transfer_file(activity_id):
     log(f"transfer_file route started for activity_id: {activity_id}")
 
-    titleChecked = request.args.get('titleChecked', 'false').lower() == 'true'
-    noteChecked = request.args.get('noteChecked', 'false').lower() == 'true'
     route = request.args.get('route', 'false')
     download_url = get_link_by_id(activity_id)
     activity = get_activity_by_id_internal(activity_id)
@@ -86,17 +84,13 @@ async def transfer_file(activity_id):
         'activity_id': activity_id,
         'runalyzeToken': runalyzeToken
     }
-
-    if titleChecked and activity and 'name' in activity:
-        upload_params['title'] = activity['name']
-        upload_params['route'] = route
-    if noteChecked and activity and 'description' in activity:
-        upload_params['note'] = activity['note']
+    upload_params['title'] = activity['name']
+    upload_params['route'] = route
 
     upload_response = upload_file(**upload_params)
 
     if upload_response and upload_response.status_code < 300:
-        txt = jsonify({"message": "File transferred successfully" ,"response":  str(upload_response.text), "titleChecked": titleChecked, "noteChecked": noteChecked})
+        txt = jsonify({"message": "File transferred successfully" ,"response":  str(upload_response.text)})
         log(f"transfer_file route completed for activity_id: {activity_id} with status code: {upload_response.status_code}")
         return txt, upload_response.status_code
     else:

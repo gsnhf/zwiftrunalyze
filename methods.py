@@ -97,7 +97,7 @@ async def fetch_file(url):
             log(f"fetch_file completed for url: {url}")
             return data
 
-def upload_file(url, file_content, activity_id, runalyzeToken, title=None, note=None, route=None):
+def upload_file(url, file_content, activity_id, runalyzeToken, title=None, route=None):
     log(f"upload_file started for activity_id: {activity_id}")
     activity_file_name = f"{activity_id}.fit"
     file_like_object = io.BytesIO(file_content)
@@ -109,8 +109,6 @@ def upload_file(url, file_content, activity_id, runalyzeToken, title=None, note=
     data = {}
     if title:
         data['title'] = title
-    if note:
-        data['note'] = note
     if route:
         data['route'] = route
 
