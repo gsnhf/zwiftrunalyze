@@ -139,6 +139,6 @@ def get_route_name(activityName):
             route = route_parts[1].split('in ')[0].strip()
         if 'Climb Portal:' in route_parts[1]:
             climbPortal = part1[0].split(':')[1].strip()
-            route = world + ' - #ClimbPortal - ' + climbPortal.split(' at ')[0].strip()
+            route = world + ' - ' + climbPortal.split(' at ')[0].strip()
         return route
     return activityName
